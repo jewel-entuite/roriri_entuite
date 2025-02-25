@@ -23,8 +23,9 @@
 			emergency_contact = <cfqueryparam value="#form.emnum#" cfsqltype="cf_sql_varchar">,
 			email = <cfqueryparam value="#form.email#" cfsqltype="cf_sql_varchar">,
 			aadhaar_number = <cfqueryparam value="#form.aadhaarNum#" cfsqltype="cf_sql_varchar">,
-			designation = <cfqueryparam value="#form.empDesg#" cfsqltype="cf_sql_integer">,
-			role_id = <cfqueryparam value="#form.empRoleid#" cfsqltype="cf_sql_integer">,
+			department_id = <cfqueryparam value="#form.empDep#" cfsqltype="cf_sql_integer">,
+			carrier_level_id = <cfqueryparam value="#form.empCarrier#" cfsqltype="cf_sql_integer">,
+			position_id = <cfqueryparam value="#form.empPosition#" cfsqltype="cf_sql_integer">,
 			marital_status = <cfqueryparam value="#form.empMrgStatus#" cfsqltype="cf_sql_varchar">,
 			current_address = <cfqueryparam value="#form.c_address#" cfsqltype="cf_sql_varchar">,
 			permanent_address = <cfqueryparam value="#form.p_address#" cfsqltype="cf_sql_varchar">,
@@ -37,7 +38,8 @@
 			OTP = <cfqueryparam value="#oneTimePass#" cfsqltype="cf_sql_varchar">,
 			DOB = <cfqueryparam value="#form.DOB#" cfsqltype="cf_sql_date">,
 			employee_created_date = <cfqueryparam value="#dateTimeFormat(now())#" cfsqltype="cf_sql_timestamp">,
-			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">
+			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">,
+			employee_relieving_date = <cfqueryparam value="#form.relieving_date#" cfsqltype="cf_sql_date">
 		</cfquery>
 		<cfquery name="adminMail">
 			SELECT email FROM employee

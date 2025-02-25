@@ -119,7 +119,7 @@
           </div>
           <div class="shadow card px-5 py-4 m-1">
             <div class="col-lg-12 mt-7 mt-lg-0 d-flex align-items-stretch" id="section1"  data-aos-delay="200">
-              <form action="../controller/_employee.cfm?regSucess=1&r_id" enctype="multipart/form-data" method="post" name="empRegForm" role="form" onsubmit="check()">
+              <form action="../controller/_employee.cfm?regSucess=1" enctype="multipart/form-data" method="post" name="empRegForm" role="form" onsubmit="check()">
                 <div class="mb-2 me-5 fw-bold" style="font-size: 1.0rem; color:##7d66e3;">
                     <label>EMPLOYEE REGISTRATION FORM</label>
                 </div>
