@@ -4,7 +4,6 @@
 	</cfif>
 	<cfif structKeyExists(url, "regSucess") AND url.regSucess EQ "1">
 		<cfinvoke component="models.employee" method="insertEmployeeDetails" argumentcollection="#form#" returnvariable="newstruct"/>
-		<cfdump var="#newstruct#"><cfabort>
 		<cfif newstruct.adminMail NEQ "" AND newstruct.oneTimePass NEQ "">
 			<!--- <cfmail to = "#form.email#" from = "#newstruct.adminMail#" subject = "Username = #form.mbnum# Password = #newstruct.oneTimePass#"> 
 			</cfmail> --->

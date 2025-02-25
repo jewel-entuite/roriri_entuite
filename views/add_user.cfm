@@ -93,6 +93,8 @@
 <!--- header ends --->
 <cfoutput>
   <cfinvoke component="models.employee" method="getDesignation" returnvariable="designation">
+  <cfinvoke component="models.employee" method="getCareerLevel" returnvariable="careerLevel">
+  <cfinvoke component="models.employee" method="getDepartment" returnvariable="department">
   <cfinvoke component="models.employee" method="getrole" returnvariable="roles"/>
   <div class="container d-flex align-items-center justify-content-between" style="margin-top:100px;">
     <div class="row">
@@ -237,30 +239,30 @@
                   <div class="row mx-4">
                     <div class="form-group col-lg-4 p-3">
                       <label style="font-size: small;" for="empDep">Department</label>
-                      <select style="font-size: small;" class="form-select" onchange="validDesignation()" name="empDep" id="empDep" required>
+                      <select style="font-size: small;" class="form-select" name="empDep" id="empDep" required>
                         <option value="">Please select</option>
-                        <cfloop query="designation">
-                          <option value="#designation.id#">#designation.designation#</option>
+                        <cfloop query="department">
+                          <option value="#department.id#">#department.name#</option>
                         </cfloop>
                       </select>
                       <span id="empDesgerror" class="error" style="color: red;"></span>
                     </div>
                     <div class="form-group col-lg-4 p-3">
                       <label style="font-size: small;" for="empCarrier">Carrier Level</label>
-                      <select style="font-size: small;" class="form-select" onchange="validRole()" name="empCarrier" id="empCarrier" required>
+                      <select style="font-size: small;" class="form-select" name="empCarrier" id="empCarrier" required disabled>
                         <option value="">Please select</option>
-                        <cfloop query="roles">
-                          <option value="#roles.id#">#roles.role#</option>
+                        <cfloop query="careerLevel">
+                          <option value="#careerLevel.id#">#careerLevel.name#</option>
                         </cfloop>
                       </select>
                       <span id="empRolegerror" class="error" style="color: red;"></span>
                     </div>
                     <div class="form-group col-lg-4 p-3">
                       <label style="font-size: small;" for="empPosition">Position</label>
-                      <select style="font-size: small;" class="form-select" onchange="validRole()" name="empPosition" id="empPosition" required>
+                      <select style="font-size: small;" class="form-select" name="empPosition" id="empPosition" required disabled>
                         <option value="">Please select</option>
-                        <cfloop query="roles">
-                          <option value="#roles.id#">#roles.role#</option>
+                        <cfloop query="designation">
+                          <option value="#designation.id#">#designation.designation#</option>
                         </cfloop>
                       </select>
                       <span id="empRolegerror" class="error" style="color: red;"></span>
@@ -285,7 +287,7 @@
                   </div>
                 </fieldset>
                 <div class="form-group mt-3">
-                  <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" onclick="return finalcheck()" id="submitButton" class="btn">Submit</button></div>
+                  <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" onclick="return finalcheck()" id="submitButton" class="btn">Add Employee</button></div>
                 </div>
               </form>
             </div>
@@ -305,6 +307,53 @@
   </script>
 
     <script>
+      document.getElementById("empDep").addEventListener("change", function () {
+          let departmentId = this.value;
+          let careerDropdown = document.getElementById("empCarrier");
+          let positionDropdown = document.getElementById("empPosition");
+
+          // Reset Career Level & Position dropdowns
+          careerDropdown.innerHTML = '<option value="">Please select</option>';
+          positionDropdown.innerHTML = '<option value="">Please select</option>';
+          careerDropdown.disabled = true;
+          positionDropdown.disabled = true;
+
+          if (departmentId) {
+              fetch("/hrms/models/employee.cfc?method=getCareerLevels&departmentId=" + departmentId)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.length > 0) {
+                          data.forEach(career => {
+                              let option = new Option(career.name, career.id);
+                              careerDropdown.add(option);
+                          });
+                          careerDropdown.disabled = false;
+                      }
+                  });
+          }
+      });
+      document.getElementById("empCarrier").addEventListener("change", function () {
+          let careerLevelId = this.value;
+          let positionDropdown = document.getElementById("empPosition");
+
+          // Reset Position dropdown
+          positionDropdown.innerHTML = '<option value="">Please select</option>';
+          positionDropdown.disabled = true;
+
+          if (careerLevelId) {
+              fetch("/hrms/models/employee.cfc?method=getPositions&careerLevelId=" + careerLevelId)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.length > 0) {
+                          data.forEach(position => {
+                              let option = new Option(position.designation, position.id);
+                              positionDropdown.add(option);
+                          });
+                          positionDropdown.disabled = false;
+                      }
+                  });
+          }
+      });
       function validaAdhaar(){
             var aadhaar = document.getElementById("aadhaarNum").value;
             var lblError = document.getElementById("lblError");
