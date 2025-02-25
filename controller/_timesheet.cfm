@@ -2,6 +2,7 @@
 	<cfif NOT structKeyExists(session, "employee")>
 	    <cflocation url="../views/logout.cfm" addtoken="false">
 	</cfif>
+	<!--- <cfdump var="#form#"><cfabort> --->
 <cfif structKeyExists(form, "update") AND NOT structKeyExists(url, "id")>
 		<!--- <cfdump var="update" abort> --->
 		<cfinvoke component="models.timesheet" method="insert" argumentcollection="#form#" returnvariable="s" id="#session.employee.id#"/>
@@ -49,7 +50,7 @@
 	    <cfelse>
 	        <cfinvoke component="models.timesheet" method="updateTask" argumentcollection="#form#"/>
 	    </cfif>
-	    <cflocation url="../views/assigned_task_details.cfm" addtoken="false">
+	    <cflocation url="../views/assigned_task_details.cfm?update" addtoken="false">
 	</cfif>
 	
 </cfoutput>

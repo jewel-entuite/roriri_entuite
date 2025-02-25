@@ -493,7 +493,45 @@
       </div>
     </div>
     </cfoutput>
+    <script src="../assets/js/main.js"></script>
     <script>
+        window.onload = function() {
+          // Function to get a URL parameter
+          function getUrlParameter(name) {
+            var url = new URL(window.location.href);
+            var paramValue = url.searchParams.get(name);
+            return paramValue;
+          }
+
+          // Function to remove a URL parameter
+          function removeUrlParameter(param) {
+            var url = new URL(window.location.href);
+            url.searchParams.delete(param);
+            window.history.replaceState({}, document.title, url.toString());
+          }
+
+          // Check if 'success' exists in the URL
+          if (getUrlParameter('update') !== null) {
+            // Display the overlay and alert
+            // document.getElementById('overlay').style.display = 'block';
+            // document.getElementById('updateAlert').style.display = 'block';
+            showUpdateAlert();
+            
+            // Remove 'success' key from the URL
+              removeUrlParameter('update');
+            // Reload the page without the 'success' parameter in the URL
+              location.reload();
+
+            // Remove 'success' from the URL after a short delay
+            setTimeout(function() {
+              // Hide the overlay and alert after 3 seconds
+              // document.getElementById('overlay').style.display = 'none';
+              // document.getElementById('updateAlert').style.display = 'none';
+              hideUpdateAlert();
+
+            }, 3000); // Adjust the timeout duration as needed
+          }
+        };
         // const deliverBefore = document.getElementById("deliverBefore");
         // const estimatedHoursInput = document.getElementById("estimatedHours");
 

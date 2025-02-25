@@ -31,31 +31,6 @@
           pointer-events: none;
           opacity: 0.5;
       }
-      #loader {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 9999;
-      }
-     #overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-        z-index: 1000; /* Lower z-index */
-      }
-
-      #successAlert {
-        position: fixed;
-        top: 50%; /* Vertically center */
-        left: 50%; /* Horizontally center */
-        transform: translate(-50%, -50%); /* Adjust position by 50% of its own width and height */
-        z-index: 2000; /* Higher z-index to appear above the overlay */
-        display: none; /* Initially hidden */
-      }
       .custom-btn {
         background: #fff;
         color: #7d66e3;
@@ -150,9 +125,9 @@
                     </div>
                 </cfif>
                 <hr>
-                  <div id="overlay" style="display: none;"></div>
+                  <!--- <div id="overlay" style="display: none;"></div>
                   <div id="loader" style="display: none;"><img src="../assets/img/loader.gif" width="50" height="50" alt="Loading..."></div>
-                  <div class="alert alert-success" style="display:none;" role="alert" id="successAlert">Task added successfully!</div>
+                  <div class="alert alert-success" style="display:none;" role="alert" id="successAlert">Task added successfully!</div> --->
                 
                 <cfif structKeyExists(url, "task_id") AND url.task_id NEQ "">
                    <cfinvoke component="models.timesheet" method="getTaskDetail" task_id="#url.task_id#" returnvariable="getTaskDetail">
@@ -331,37 +306,32 @@
     </cfif>
   </cfoutput>
     function getModules(selected_id = null) {
-      // document.addEventListener("DOMContentLoaded", function() {
-      // get project name and set to form hidden field
-        var project_name = document.getElementById("project").options[document.getElementById("project").selectedIndex].text;
-        const projectNameField = document.getElementById("project_name");
-        console.log(project_name);
-        projectNameField.value = project_name;
-        console.log(document.getElementById("project_name").value);
-      // });
+    var project_name = document.getElementById("project").options[document.getElementById("project").selectedIndex].text;
+    const projectNameField = document.getElementById("project_name");
+    projectNameField.value = project_name;
 
-      var p_id = document.getElementById("project").value;
-      document.getElementById("loader").style.display = 'block';
-      document.getElementById("overlay").style.display = 'block';
-      $.ajax({
-          type: 'POST',
-          url: '../models/timesheet.cfc',
-          dataType: 'json', // Expect JSON response
-          data: {
-              method: 'modulelist',
-              pro_id: p_id
-          },
-          success: function(response) {
-              document.getElementById("loader").style.display = 'none';
-              document.getElementById("overlay").style.display = 'none';
-              document.getElementById("module").removeAttribute("disabled");
-              // console.log(response.DATA);
-              if (response && response.DATA && Array.isArray(response.DATA)) {
-                var moduleDropdown = document.getElementById("module");
-                console.log(moduleDropdown);
-                 // Clear existing options
-                moduleDropdown.innerHTML = '<option value="" selected disabled>Choose Module</option>';
-                // Populate dropdown with modules
+    var p_id = document.getElementById("project").value;
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loader').style.display = 'block';
+    // showLoading();
+    
+    $.ajax({
+        type: 'POST',
+        url: '../models/timesheet.cfc',
+        dataType: 'json',
+        data: {
+            method: 'modulelist',
+            pro_id: p_id
+        },
+        success: function(response) {
+          document.getElementById('overlay').style.display = 'none';
+          document.getElementById('loader').style.display = 'none';
+            // hideLoading();
+            var moduleDropdown = document.getElementById("module");
+            moduleDropdown.removeAttribute("disabled");
+            moduleDropdown.innerHTML = '<option value="" selected disabled>Choose Module</option>';
+
+            if (response && response.DATA && Array.isArray(response.DATA)) {
                 response.DATA.forEach(function(row) {
                     var moduleId = row[0];
                     var moduleName = row[2];
@@ -369,24 +339,24 @@
                     var option = document.createElement("option");
                     option.value = moduleId;
                     option.text = moduleName;
-                    document.addEventListener("DOMContentLoaded", function() {
-                      document.getElementById("module_name").value = moduleName;
-                    });
-                    if(selected_id==moduleId){
-                      option.selected= true;
-                      document.getElementById("module_name").value = moduleName;
+
+                    // Check if the selected_id (from update) matches moduleId
+                    if (selected_id && selected_id == moduleId) {
+                        option.selected = true;
+                        document.getElementById("module_name").value = moduleName;
                     }
+
                     moduleDropdown.appendChild(option);
                 });
-              } else {
+            } else {
                 console.error("Unexpected response format:", response);
-              }
-          },
-          error: function(xhr, status, error) {
-              console.error("Error fetching modules:", error);
-          }
-      });
-    }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching modules:", error);
+        }
+    });
+}
 
      window.onload = function() {
       // Function to get a URL parameter
@@ -406,8 +376,9 @@
       // Check if 'success' exists in the URL
       if (getUrlParameter('success') !== null) {
         // Display the overlay and alert
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('successAlert').style.display = 'block';
+        // document.getElementById('overlay').style.display = 'block';
+        // document.getElementById('successAlert').style.display = 'block';
+        showSuccessAlert();
         
         // Remove 'success' key from the URL
           removeUrlParameter('success');
@@ -417,8 +388,9 @@
         // Remove 'success' from the URL after a short delay
         setTimeout(function() {
           // Hide the overlay and alert after 3 seconds
-          document.getElementById('overlay').style.display = 'none';
-          document.getElementById('successAlert').style.display = 'none';
+          // document.getElementById('overlay').style.display = 'none';
+          // document.getElementById('successAlert').style.display = 'none';
+          hideSuccessAlert();
 
         }, 3000); // Adjust the timeout duration as needed
       }

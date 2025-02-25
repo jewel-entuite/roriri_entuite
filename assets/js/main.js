@@ -242,3 +242,55 @@
   });
 
 })()
+
+// Loader
+function showLoading(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('loader').style.display = 'block';
+
+}
+function hideLoading(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('loader').style.display = 'none';
+  
+}
+// Loader
+
+// Success Alert
+function showSuccessAlert(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('successAlert').style.display = 'block';
+
+}
+function hideSuccessAlert(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('successAlert').style.display = 'none';
+  
+}
+// Success Alert
+
+// Update Alert
+function showUpdateAlert(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('updateAlert').style.display = 'block';
+
+}
+function hideUpdateAlert(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('updateAlert').style.display = 'none';
+  
+}
+// Update Alert
+
+// delete Alert
+function showDeleteAlert(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('deleteAlert').style.display = 'block';
+
+}
+function hideDeleteAlert(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('deleteAlert').style.display = 'none';
+  
+}
+// delete Alert

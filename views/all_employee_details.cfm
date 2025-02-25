@@ -215,6 +215,36 @@
           
             </cfoutput>
             <script>
+              window.onload = function() {
+                // Function to get a URL parameter
+                function getUrlParameter(name) {
+                  var url = new URL(window.location.href);
+                  var paramValue = url.searchParams.get(name);
+                  return paramValue;
+                }
+
+                // Function to remove a URL parameter
+                function removeUrlParameter(param) {
+                  var url = new URL(window.location.href);
+                  url.searchParams.delete(param);
+                  window.history.replaceState({}, document.title, url.toString());
+                }
+
+                // Check if 'success' exists in the URL
+                if (getUrlParameter('update') !== null) {
+                  document.getElementById('overlay').style.display = 'block';
+                  document.getElementById('updateAlert').style.display = 'block';
+                  
+                  // Remove 'success' key from the URL
+                    removeUrlParameter('update');
+                    location.reload();
+                  setTimeout(function() {
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('updateAlert').style.display = 'none';
+
+                  }, 3000); // Adjust the timeout duration as needed
+                }
+              };
               function editEmpDetails(eId){
                 location.href="employee_profile.cfm?id="+eId;
               }
@@ -363,6 +393,9 @@
 
           <!-- Template Main JS File -->
             <script src="assets/js/main.js"></script>
+            <script>
+              
+            </script>
 </body>
 </html>
 

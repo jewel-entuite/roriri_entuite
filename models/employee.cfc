@@ -37,8 +37,7 @@
 			OTP = <cfqueryparam value="#oneTimePass#" cfsqltype="cf_sql_varchar">,
 			DOB = <cfqueryparam value="#form.DOB#" cfsqltype="cf_sql_date">,
 			employee_created_date = <cfqueryparam value="#dateTimeFormat(now())#" cfsqltype="cf_sql_timestamp">,
-			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">,
-			employee_relieving_date = <cfqueryparam value="#form.relieving_date#" cfsqltype="cf_sql_date">
+			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">
 		</cfquery>
 		<cfquery name="adminMail">
 			SELECT email FROM employee
@@ -138,6 +137,7 @@
 	</cffunction>
 
 	<cffunction name="updateProfileAdmin">
+		<!--- <cfdump var="#form#"><cfabort> --->
 		<cfargument name="u_id" default="">
 		<cftry>
 		<cfquery name="uProfile">
@@ -160,8 +160,10 @@
 			nps_acct_number = <cfqueryparam value="#form.npsNum#" cfsqltype="cf_sql_varchar">,
 			pf_acct_number = <cfqueryparam value="#form.pfNum#" cfsqltype="cf_sql_varchar">,
 			DOB = <cfqueryparam value="#form.DOB#" cfsqltype="cf_sql_date">,
-			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">,
-			employee_relieving_date = <cfqueryparam value="#form.relieving_date#" cfsqltype="cf_sql_date">
+			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">
+			<cfif structKeyExists(form, "form.relieving_date") AND form.relieving_date NEQ "">
+				,employee_relieving_date = <cfqueryparam value="#form.relieving_date#" cfsqltype="cf_sql_date">
+			</cfif>
 			<cfif structKeyExists(form, "employee_status")>
 				,status = <cfqueryparam value="0" cfsqltype="cf_sql_varchar">
 			<cfelse>

@@ -33,6 +33,31 @@
             vertical-align: middle; 
             color:orangered;
         }
+        ##loader {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        ##overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 1000; /* Lower z-index */
+        }
+
+        ##updateAlert, ##successAlert, ##deleteAlert {
+            position: fixed;
+            top: 50%; /* Vertically center */
+            left: 50%; /* Horizontally center */
+            transform: translate(-50%, -50%); /* Adjust position by 50% of its own width and height */
+            z-index: 2000; /* Higher z-index to appear above the overlay */
+            display: none; /* Initially hidden */
+        }
 
     </style>
 <!--- invoke --->
@@ -243,6 +268,11 @@
             </nav>
 <!-- navbar ends -->
         </div>
+        <div id="overlay" style="display: none;"></div>
+        <div id="loader" style="display: none;"><img src="../assets/img/loader.gif" width="50" height="50" alt="Loading..."></div>
+        <div class="alert alert-success" style="display:none;" role="alert" id="successAlert">Added successfully!</div>
+        <div class="alert alert-warning" style="display:none;" role="alert" id="updateAlert">Updated successfully!</div>
+        <div class="alert alert-danger" style="display:none;" role="alert" id="deleteAlert">Deleted successfully!</div>
     </header>
 <!--- header ends --->
     <script>

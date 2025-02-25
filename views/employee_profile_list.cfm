@@ -86,22 +86,22 @@
 											<div class="d-flex justify-content-between align-items-center">
 						            <h4 class="card-title m-4" style="color:##7d66e3;">Personal Details</h4>
 						            <form name="editform" method="post" action="employee_profile.cfm?id=#url.id#">
-										<cfif structKeyExists(getprofile, "id")>
-											<cfdirectory action="list" directory="#expandPath("../assets/kyc_documents")#/#getprofile.id#/employee_photo" recurse="false" name="myList">
-											<cfset imagefiles = queryFilter(myList, function(obj){
-												return listFindNoCase(obj.name,"jpg",".") || listFindNoCase(obj.name,"jpeg",".") || listFindNoCase(obj.name,"png",".") || listFindNoCase(obj.name,"gif",".");
-											})>
-										
-											<cfif imagefiles.recordCount gt 0>
-												<cfloop query="imagefiles">
-													<div>
-														<img src="../assets/kyc_documents/#getprofile.id#/employee_photo/#imagefiles.name#" alt="Employee Photo" style="max-width: 100px;">
-													</div>
-												</cfloop>
-											</cfif>
-										</cfif>
-										<br>
-										<button class="float-end" style="background: ##7d66e3;border: 0; color: ##fff;border-radius: 4px;" type="submit" class="btn float-right" >
+													<cfif structKeyExists(getprofile, "id")>
+														<cfdirectory action="list" directory="#expandPath("../assets/kyc_documents")#/#getprofile.id#/employee_photo" recurse="false" name="myList">
+														<cfset imagefiles = queryFilter(myList, function(obj){
+															return listFindNoCase(obj.name,"jpg",".") || listFindNoCase(obj.name,"jpeg",".") || listFindNoCase(obj.name,"png",".") || listFindNoCase(obj.name,"gif",".");
+														})>
+													
+														<cfif imagefiles.recordCount gt 0>
+															<cfloop query="imagefiles">
+																<div>
+																	<img src="../assets/kyc_documents/#getprofile.id#/employee_photo/#imagefiles.name#" alt="Employee Photo" style="max-width: 100px;">
+																</div>
+															</cfloop>
+														</cfif>
+													</cfif>
+													<br>
+													<button class="float-end" style="background: ##7d66e3;border: 0; color: ##fff;border-radius: 4px;" type="submit" class="btn float-right" >
 							            	<i class="bi bi-pencil-square"></i>
 							            </button>
 						          	</form>

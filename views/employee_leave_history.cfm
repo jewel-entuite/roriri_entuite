@@ -20,6 +20,14 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cabin&family=Inconsolata&family=Merriweather+Sans&family=Nunito&family=Nunito+Sans&family=Pacifico&family=Quicksand&family=Rubik&family=VT323&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+  setTimeout(function() {
+                    $('#updateAlertModal').modal('show');
+          }, 200);
+  function redirect() {
+            window.location="employee_leave_history.cfm"
+        }
+    </script>
 
     <style>
         .pointer {
@@ -89,6 +97,7 @@
 
 </head>
 <body>
+
   <cfoutput>
     <cfinvoke component="models.employee" method="getemployee" id="#session.employee.id#" returnvariable="employeeList"/>
     <cfinvoke component="models.logsheet" method="getLogs" returnvariable="userClock"/>
