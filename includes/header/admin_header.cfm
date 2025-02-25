@@ -54,6 +54,15 @@
           <li><a class="nav-link scrollto d-flex d-inline-flex" href="admin_dashboard.cfm"><span><i style="width:100%; font-size: large;" class="bi bi-house-door mx-1"></i></span><span>Home</span></a></li>
 <!--- home ends --->
 
+
+          <li class="dropdown"><a class="d-flex d-inline-flex <cfif isDefined("active_status") AND active_status EQ "workforce_structure"> active </cfif>" style=" text-decoration: none;" href="##"><span><i style="width:100%; font-size:large;" class="bi bi-person-gear mx-1"></i></span><span>Workforce Structure</span></a>
+              <ul>
+                  <li><a href="department.cfm">Department Details</a></li>
+                  <li><a href="all_employee_details.cfm">Career level Details</a></li>
+                  <li><a href="all_employee_details.cfm">Designation Details</a></li>
+              </ul>
+          </li>
+
 <!--- Employee --->
           <li class="dropdown"><a class="d-flex d-inline-flex <cfif isDefined("active_status") AND active_status EQ "employee_management"> active </cfif>" style=" text-decoration: none;" href="##"><span><i style="width:100%; font-size:large;" class="bi bi-person-gear mx-1"></i></span><span>Employee Management</span></a>
               <ul>

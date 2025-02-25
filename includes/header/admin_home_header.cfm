@@ -54,7 +54,13 @@
 <!--- home --->
                     <li><a class="nav-link scrollto active d-flex d-inline-flex" href="admin_dashboard.cfm"><span><i style="width:100%; font-size: large;" class="bi bi-house-door mx-1"></i></span><span>Home</span></a></li>
 <!--- home ends --->
-
+                    <li class="dropdown"><a class="d-flex d-inline-flex" style=" text-decoration: none;" href="##"><span><i style="width:100%; font-size:large;" class="bi bi-person-workspace mx-1"></i></span><span>Workforce Structure</span></a>
+                        <ul>
+                            <li><a href="department.cfm">Department Details</a></li>
+                            <li><a href="">Career level Details</a></li>
+                            <li><a href="">Designation Details</a></li>
+                        </ul>
+                    </li>
 <!--- Employee Management  --->
                     <li class="dropdown"><a class="d-flex d-inline-flex" style=" text-decoration: none;" href="##"><span><i style="width:100%; font-size:large;" class="bi bi-person-gear mx-1"></i></span><span>Employee Management</span></a>
                         <ul>
