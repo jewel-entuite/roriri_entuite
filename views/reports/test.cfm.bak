@@ -1,0 +1,85 @@
+<cfdocument format="PDF" orientation="landscape" saveasname="Time Sheet Individual Report.pdf" pagetype="A4">
+  <cfdocumentitem type="footer" evalatprint="true">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="right" style="font-size:small;"><cfoutput>#cfdocument.currentsectionpagenumber# of
+      #cfdocument.totalsectionpagecount#</cfoutput></td>
+      </tr>
+    </table> 
+  </cfdocumentitem>
+
+
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <table class="table table-bordered" width="100%" border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Start Date</th>
+          <th scope="col">Project</th>
+          <th scope="col">Task Type</th>
+          <th scope="col">Module</th>
+          <th scope="col">Description</th>
+          <th scope="col">Status</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Updated On</th>
+          <th scope="col">Productive hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+        </tr>
+        <tr>
+          <th scope="row">4</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+          <td>Otto</td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+</cfdocument>

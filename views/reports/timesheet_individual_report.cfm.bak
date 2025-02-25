@@ -1,0 +1,223 @@
+<html>
+<body>
+<cfdump var="list" >
+<cfif structKeyExists(url, "userid")>
+	<cfif structKeyExists(url, "p_id")>
+		<!--- <cfdump var="list1" > --->
+
+		<cfinvoke component="models/timesheet" method="getdetails" p1="#url.p_id#" id="#url.userid#"year="#url.year#" month="#url.month#" module="#url.module#" status="#url.status#" req="#url.req#" returnvariable="list"/>
+		<cfdump var="#list#">
+	<cfelse>
+		<!--- <cfdump var="list2" > --->
+		<cfinvoke component="/timesheet/models/timesheet" method="getdetails" id="#url.userid#" year="#url.year#" month="#url.month#" module="#url.module#" status="#url.status#" req="#url.req#"  returnvariable="list"/>
+	</cfif>
+<cfelse>
+	<cfdump var="list3" >
+	<cfinvoke component="/timesheet/models/timesheet" method="getdetails" returnvariable="list" id="#session.employee.id#"/>
+</cfif>
+
+	<!--- <cfdump var="#list#" abort> --->
+
+<cfdocument format="PDF" orientation="landscape" saveasname="Time Sheet Individual Report.pdf" pagetype="A4">
+	<cfdocumentitem type="footer" evalatprint="true">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td align="right" style="font-size:small;"><cfoutput>#cfdocument.currentsectionpagenumber# of
+			#cfdocument.totalsectionpagecount#</cfoutput></td>
+			</tr>
+		</table> 
+	</cfdocumentitem>
+
+	<html>
+		<head>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		</head>
+		<body style="align-content: center;">
+			<h2 class="display-4" style="text-align: center; color: #1a0c4f;">TIME SHEET</h2>
+			<!--- <h3 class="display-4" style="text-align: center; color: #264653;">Time Sheet Report of <cfoutput>#list.user_name#</cfoutput></h3> --->
+			<P class="display-4" style="text-align: left; font-size:small; color:#181033; font-family: serif; font-size: medium;">Employee Name:  <cfoutput>#list.first_name#</cfoutput></P>
+
+			<!--- Background color start --->
+
+			<cfset In_Progress = "##faa77a">
+			<cfset Completed = "##e0fcc5">
+			<cfset Re_opened = "##d2eff7">
+			<cfset R_D = "##facfc8">
+
+			<cfset New = "##aae3b6">
+			<cfset Bug = "##fab0a0">
+			<cfset Manual_Error = "##d7e4fa">
+
+			<!--- Background color end --->
+
+			<table class="report-list" width="100%" border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;">
+				<cfoutput>
+					<thead style="background-color: ##d0d1f7; color: ##361d45;">
+						<tr class="text-center" style="font-size:small; text-align: center; height: 50px;">
+							<th style="width:5%;">#UCase("Sl.No")#</th>
+							<th style="width:10%;">#UCase("Start Date")#</th>
+							<th style="width:10%;">#UCase("Project")#</th>
+							<th style="width:10%;">#UCase("Task Type")#</th>
+							<th style="width:10%;">#UCase("Module")#</th>
+							<th style="width:30%;">#UCase("Description")#</th>
+							<th style="width:8%;">#UCase("Status")#</th>
+							<!--- <th>#UCase("Duration")#</th> --->
+							<!--- <th>Updated On</th> --->
+							<th style="width:15%;">#UCase("Productive hours")#</th>
+						</tr>
+					</thead>
+				</cfoutput>
+				<tbody>
+				<cfset k=1>
+				<cfset totaltime_hours=0>
+				<cfset totaltime_mins=0>
+				<cfset New_hours=0>
+				<cfset New_mins=0>
+				<cfset Bug_hours=0>
+				<cfset Bug_mins=0>
+				<cfset M_hours=0>
+				<cfset M_mins=0>
+				<cfset billable_hours=0>
+				<cfset billable_mins=0>
+				<cfoutput>
+				<cfloop query="list">
+						<tr class="text-center" style="font-size: 11px; text-align: center; color: black; font-family: serif;">
+							<td>#k#</td>
+							<td>#dateformat(list.start_time,"dd-mm-yyyy")#</td>
+							<td>#ucFirst(list.project_id)#</td>
+							<cfif list.type EQ "New">
+								<td style="background-color: #New#;Color: black">#ucFirst(list.type)#</td>
+							<cfelseif list.type EQ "Bug">
+								<td style="background-color: #Bug#;Color: black">#ucFirst(list.type)#</td>
+							<cfelseif list.type EQ "Manual Error">
+								<td style="background-color: #Manual_Error#;Color: black">#ucFirst(list.type)#</td>
+							</cfif>
+							<td>#ucFirst(list.modules,true)#</td>
+							<td style="text-align: justify; padding: 10px;">#ucFirst(list.description)#</td>
+							<cfif list.status EQ "In Progress">
+								<td style="background-color: #In_Progress#;Color: black">#ucFirst(list.status)#</td>
+							<cfelseif list.status EQ "Completed">
+								<td style="background-color:#Completed#;color: Black;">#ucFirst(list.status)#</td>
+							<cfelseif list.status EQ "Re-opened">
+								<td style="background-color:#Re_opened#;color: Black;">#ucFirst(list.status)#</td>
+							<cfelseif list.status EQ "R&D">
+								<td style="background-color:#R_D#;color: Black;">#ucFirst(list.status)#</td>
+							</cfif>
+							<!--- <td style="font-size: x-small;">#timeFormat(list.start_time,"hh:nn tt")#<br>to<br>#timeFormat(list.end_time,"hh:nn tt")#</td> --->
+							<!--- <td>#dateFormat(list.date,"dd-mmm-yyyy")#</td> --->
+							<td>#val(list.productive_hours)#h #val(list.productive_mins)#m</td>
+						</tr>
+					<cfset k++>
+					<cfset totaltime_mins += list.productive_mins>
+					<cfset totaltime_hours += list.productive_hours>
+					<cfif list.type EQ "New">
+						<cfset New_hours += list.productive_hours>
+						<cfset New_mins += list.productive_mins>
+					<cfelseif list.type EQ "Bug">
+						<cfset Bug_hours += list.productive_hours>
+						<cfset Bug_mins += list.productive_mins>
+					<cfelseif list.type EQ "Manual Error">
+						<cfset M_hours += list.productive_hours>
+						<cfset M_mins += list.productive_mins>
+					</cfif>
+					<cfset billable_hours=New_hours+M_hours>
+					<cfset billable_mins=New_mins+M_mins>
+				</cfloop>
+				<!--- minutes hours calculations start --->
+
+					<!--- total --->
+
+					<cfset cal_mins_hour = listGetAt((totaltime_mins/60), 1,".")>
+					<cfif cal_mins_hour GT 0>
+						<cfset final_cal_hours = totaltime_hours+cal_mins_hour>
+						<cfset final_cal_mins = totaltime_mins-(60*cal_mins_hour)>
+					<cfelse>
+						<cfset final_cal_hours = totaltime_hours>
+						<cfset final_cal_mins = totaltime_mins>
+					</cfif>
+
+					<!--- New --->
+
+					<cfset cal_mins_hour_new = listGetAt((New_mins/60), 1,".")>
+					<cfif cal_mins_hour_new GT 0>
+						<cfset final_cal_hours_new = New_hours+cal_mins_hour_new>
+						<cfset final_cal_mins_new = New_mins-(60*cal_mins_hour_new)>
+					<cfelse>
+						<cfset final_cal_hours_new = New_hours>
+						<cfset final_cal_mins_new = New_mins>
+					</cfif>
+
+					<!--- Bug --->
+
+					<cfset cal_mins_hour_Bug = listGetAt((Bug_mins/60), 1,".")>
+					<cfif cal_mins_hour_Bug GT 0>
+						<cfset final_cal_hours_Bug = Bug_hours+cal_mins_hour_Bug>
+						<cfset final_cal_mins_Bug = Bug_mins-(60*cal_mins_hour_Bug)>
+					<cfelse>
+						<cfset final_cal_hours_Bug = Bug_hours>
+						<cfset final_cal_mins_Bug = Bug_mins>
+					</cfif>
+
+					<!--- Manual Error --->
+
+					<cfset cal_mins_hour_M = listGetAt((M_mins/60), 1,".")>
+					<cfif cal_mins_hour_M GT 0>
+						<cfset final_cal_hours_M = M_hours+cal_mins_hour_M>
+						<cfset final_cal_mins_M = M_mins-(60*cal_mins_hour_M)>
+					<cfelse>
+						<cfset final_cal_hours_M = M_hours>
+						<cfset final_cal_mins_M = M_mins>
+					</cfif>
+
+					<!--- Billable --->
+
+					<cfset cal_mins_hour_b = listGetAt((billable_mins/60), 1,".")>
+					<cfif cal_mins_hour_b GT 0>
+						<cfset final_cal_hours_b = billable_hours+cal_mins_hour_b>
+						<cfset final_cal_mins_b = billable_mins-(60*cal_mins_hour_b)>
+					<cfelse>
+						<cfset final_cal_hours_b = billable_hours>
+						<cfset final_cal_mins_b = billable_mins>
+					</cfif>
+
+					<!--- minutes hours calculations end --->
+				<tr>
+					<td colspan="7"></td>
+					<td style="font-size:small; text-align:center;">Total:#final_cal_hours#h #final_cal_mins#m</td>
+
+				</tr>
+				</tbody>
+			</table>
+			<br/>
+			<table class="report-list" align="center" width="30%" border="1" cellspacing="0" cellpadding="3" style="border-collapse:collapse;">
+				<tr style="font-size:small; text-align: left;">
+					<th style="text-align:center;">Requirement Type</th>
+					<th style="text-align:center;">Hours</th>
+				</tr>
+				<tr style="font-size:small; text-align: left;background-color: #Bug#;">
+					<td >Bugs</td>
+					<td style = "text-align: center;">#final_cal_hours_Bug#h #final_cal_mins_Bug#m</td>
+				</tr>
+				<tr style="font-size:small; text-align: left; background-color: #Manual_Error#;">
+					<td>Manual error</td>
+					<td style = "text-align: center;">#final_cal_hours_M#h #final_cal_mins_M#m</td>
+				</tr>
+				<tr style="font-size:small; text-align: left; background-color: #New#;">
+					<td>New requirement</td>
+					<td style = "text-align: center;">#final_cal_hours_new#h #final_cal_mins_new#m</td>
+				</tr>
+				<tr style="font-size:small; text-align: left;">
+					<th>Total hours</th>
+					<td style = "text-align: center;">#final_cal_hours#h #final_cal_mins#m</td>
+				</tr>
+				<tr style="font-size:small; text-align: left;">
+					<th style="font-size: 14px;"><b>Total billable hours</b></th>
+					<td style = "text-align: center; font-size: 14px;"><b>#final_cal_hours_b#h #final_cal_mins_b#m</b></td>
+				</tr>
+			</table>
+			</cfoutput>
+		</body>
+	</html>
+</cfdocument> 
+</body>
+</html>
