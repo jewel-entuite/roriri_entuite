@@ -217,7 +217,7 @@
 	</cffunction>
 
 	<cffunction name="updateProfileAdmin">
-		<cfdump var="#form#"><cfabort>
+		<!--- <cfdump var="#form#"><cfabort> --->
 		<cfargument name="u_id" default="">
 		<cftry>
 		<cfquery name="uProfile">
@@ -332,7 +332,7 @@
 	</cffunction>
 	<cffunction name="ResignedEmployees">
 		<cfquery name="employeeResignedList" >
-			SELECT E.id,E.first_name,E.last_name,D.designation,R.role,E.mobile,E.email,E.aadhaar_number,E.current_address,E.employee_joining_date FROM employee E
+			SELECT E.id,E.first_name,E.last_name,D.name,R.role,E.mobile,E.email,E.aadhaar_number,E.current_address,E.employee_joining_date FROM employee E
 			LEFT JOIN designation D ON D.id = E.designation
 			LEFT JOIN role R ON R.id = E.role_id
 			WHERE status = <cfqueryparam value="0" cfsqltype="cf_sql_varchar">

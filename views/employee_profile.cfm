@@ -239,7 +239,6 @@
               </div>
             </div>
             <br>
-            <cfdump var="#getprofile#"><cfabort>
             <div class="card shadow p-3 mb-5 bg-white rounded">
               <h4 class="card-title m-4" style="color:##7d66e3;">Employment Details</h4>
               <div class="row mx-4">
@@ -317,15 +316,6 @@
   </cfoutput>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var departmentId = "<cfoutput>#getprofile.deparment_id#</cfoutput>";
-        var careerId = "<cfoutput>#getprofile.career_id#</cfoutput>";
-        var positionId = "<cfoutput>#getprofile.designation_id#</cfoutput>";
-
-        if (departmentId) {
-            getCareerLevels(careerId, positionId);
-        }
-    });
 
     function toggleRelievingDate() {
       var checkbox = document.getElementById("employee_status");
@@ -346,111 +336,122 @@
         toggleRelievingDate();
     };
 
+    document.addEventListener("DOMContentLoaded", function () {
+        var careerDropdown = document.getElementById("empCarrier");
+        var positionDropdown = document.getElementById("empPosition");
+        var departmentDropdown = document.getElementById("empDep");
+
+        var selectedCareerId = "<cfoutput>#getprofile.career_id#</cfoutput>"; // Career Level ID
+        var selectedPositionId = "<cfoutput>#getprofile.designation_id#</cfoutput>"; // Position ID
+        var selectedDepartmentId = "<cfoutput>#getprofile.deparment_id#</cfoutput>"; // Department ID
+
+        if (selectedCareerId) {
+            careerDropdown.value = selectedCareerId;
+            getPositions(selectedPositionId, selectedDepartmentId);
+        }
+    });
+
+    function getPositions(selected_id = null, selected_department_id = null) {
+        var careerDropdown = document.getElementById("empCarrier");
+        var positionDropdown = document.getElementById("empPosition");
+        var departmentDropdown = document.getElementById("empDep");
+
+        positionDropdown.innerHTML = '<option value="">Please select</option>';
+        positionDropdown.setAttribute("disabled", "true");
+        
+        departmentDropdown.innerHTML = '<option value="">Please select</option>';
+        departmentDropdown.setAttribute("disabled", "true");
+
+        if (!careerDropdown.value) {
+            return;
+        }
+
+        var careerId = careerDropdown.value;
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('loader').style.display = 'block';
+
+        $.ajax({
+            type: 'POST',
+            url: '../models/employee.cfc',
+            dataType: 'json',
+            data: {
+                method: 'getDesignation',
+                career_level_id: careerId
+            },
+            success: function(response) {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loader').style.display = 'none';
+
+                if (response && response.DATA.length > 0) {
+                    positionDropdown.removeAttribute("disabled");
+
+                    response.DATA.forEach(function(row) {
+                        var option = document.createElement("option");
+                        option.value = row[0];
+                        option.text = row[1];
+                        positionDropdown.appendChild(option);
+                    });
+
+                    if (selected_id) {
+                        positionDropdown.value = selected_id;
+                        getDepartment(selected_department_id); // Call after position is set
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching positions:", error);
+            }
+        });
+    }
+
     function getDepartment(selected_id = null) {
-      var positionDropdown = document.getElementById("empPosition");
-      var departmentDropdown = document.getElementById("empDep");
+        var positionDropdown = document.getElementById("empPosition");
+        var departmentDropdown = document.getElementById("empDep");
 
-      departmentDropdown.innerHTML = '<option value="">Please select</option>';
-      departmentDropdown.setAttribute("disabled", "true");
+        departmentDropdown.innerHTML = '<option value="">Please select</option>';
+        departmentDropdown.setAttribute("disabled", "true");
 
-      if (!positionDropdown.value) {
-          return;
-      }
+        if (!positionDropdown.value) {
+            return;
+        }
 
-      var positionName = positionDropdown.options[positionDropdown.selectedIndex].text;
-      document.getElementById("position_name").value = positionName;
+        var positionId = positionDropdown.value;
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('loader').style.display = 'block';
 
-      var positionId = positionDropdown.value;
-      document.getElementById('overlay').style.display = 'block';
-      document.getElementById('loader').style.display = 'block';
+        $.ajax({
+            type: 'POST',
+            url: '../models/employee.cfc',
+            dataType: 'json',
+            data: {
+                method: 'departmentLists',
+                designation_id: positionId
+            },
+            success: function(response) {
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loader').style.display = 'none';
 
-      $.ajax({
-          type: 'POST',
-          url: '../models/employee.cfc',
-          dataType: 'json',
-          data: {
-              method: 'departmentLists',
-              designation_id: positionId
-          },
-          success: function(response) {
-              document.getElementById('overlay').style.display = 'none';
-              document.getElementById('loader').style.display = 'none';
+                if (response && response.DATA.length > 0) {
+                    departmentDropdown.removeAttribute("disabled");
 
-              if (response && response.DATA.length > 0) {
-                  departmentDropdown.removeAttribute("disabled"); 
-                  
-                  response.DATA.forEach(function(row) {
-                      var option = document.createElement("option");
-                      option.value = row[0]; // Department ID
-                      option.text = row[1];  // Department Name
-                      departmentDropdown.appendChild(option);
-                  });
+                    response.DATA.forEach(function(row) {
+                        var option = document.createElement("option");
+                        option.value = row[0];
+                        option.text = row[1];
+                        departmentDropdown.appendChild(option);
+                    });
 
-                  if (selected_id) {
-                      departmentDropdown.value = selected_id;
-                  }
-              }
-          },
-          error: function(xhr, status, error) {
-              console.error("Error fetching departments:", error);
-          }
-      });
+                    if (selected_id) {
+                        departmentDropdown.value = selected_id;
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching departments:", error);
+            }
+        });
     }
 
-    function getPositions(selected_id = null) {
-      var careerDropdown = document.getElementById("empCarrier");
-      var positionDropdown = document.getElementById("empPosition");
-      var departmentDropdown = document.getElementById("empDep");
-
-      positionDropdown.innerHTML = '<option value="">Please select</option>';
-      positionDropdown.setAttribute("disabled", "true");
-      
-      departmentDropdown.innerHTML = '<option value="">Please select</option>';
-      departmentDropdown.setAttribute("disabled", "true");
-
-      if (!careerDropdown.value) {
-          return;
-      }
-
-      var PositionName = careerDropdown.options[careerDropdown.selectedIndex].text;
-      document.getElementById("position_name").value = PositionName;
-
-      var careerId = careerDropdown.value;
-      document.getElementById('overlay').style.display = 'block';
-      document.getElementById('loader').style.display = 'block';
-
-      $.ajax({
-          type: 'POST',
-          url: '../models/employee.cfc',
-          dataType: 'json',
-          data: {
-              method: 'getDesignation',
-              career_level_id: careerId
-          },
-          success: function(response) {
-              document.getElementById('overlay').style.display = 'none';
-              document.getElementById('loader').style.display = 'none';
-
-              if (response && response.DATA.length > 0) {
-                  positionDropdown.removeAttribute("disabled"); 
-
-                  response.DATA.forEach(function(row) {
-                      var option = document.createElement("option");
-                      option.value = row[0]; // Position ID
-                      option.text = row[1];  // Position Name
-                      positionDropdown.appendChild(option);
-                  });
-
-                  if (selected_id) {
-                      positionDropdown.value = selected_id;
-                  }
-              }
-          },
-          error: function(xhr, status, error) {
-              console.error("Error fetching positions:", error);
-          }
-      });
-    }
 
     function checkbox(){
       var checked=document.getElementById("c1").checked;

@@ -18,12 +18,9 @@
 <cfif structKeyExists(form, "u_profile")>
 	<cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID EQ "1">
 		<cfinvoke component="models.employee" method="updateProfileAdmin" u_id="#decrypt(url.id, 'RHMm64ACs6qftCFBz4j+5Q==', 'AES','HEX')#" argumentcollection="#form#"/>
+		<cflocation url="../views/all_employee_details.cfm?u">
 	<cfelse>
 		<cfinvoke component="models.employee" method="updateProfile" u_id="#decrypt(url.id, 'RHMm64ACs6qftCFBz4j+5Q==', 'AES','HEX')#" argumentcollection="#form#"/>
-	</cfif>
-	<cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID EQ "1">
-		<cflocation url="../views/all_employee_details.cfm">
-	<cfelse>
 		<cflocation url="../views/employee_profile_list.cfm?id=#url.id#">
 	</cfif>
 </cfif>
