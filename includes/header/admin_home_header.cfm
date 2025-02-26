@@ -259,6 +259,11 @@
             </nav>
 <!-- navbar ends -->
         </div>
+        <div id="overlay" style="display: none;"></div>
+        <div id="loader" style="display: none;"><img src="../assets/img/loader.gif" width="50" height="50" alt="Loading..."></div>
+        <div class="alert alert-success" style="display:none;" role="alert" id="successAlert">Added successfully!</div>
+        <div class="alert alert-warning" style="display:none;" role="alert" id="updateAlert">Updated successfully!</div>
+        <div class="alert alert-danger" style="display:none;" role="alert" id="deleteAlert">Deleted successfully!</div>
     </header>
 <!--- header ends --->
     <script>
