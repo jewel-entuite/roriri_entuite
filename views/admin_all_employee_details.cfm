@@ -165,17 +165,25 @@
 					                		</cfif>
 					                </div>
 					                <div class="col-lg-4 p-3">
-					                	<h6>Designation</h6>
-					                		<cfif getprofile.designation NEQ "">
-					                			<span class="font_style">#getprofile.design#</span>
+					                	<h6>Department</h6>
+					                		<cfif getprofile.deparment_name NEQ "">
+					                			<span class="font_style">#getprofile.deparment_name#</span>
 					                		<cfelse>
 					                			<span class="font_style_NA">NA</span>
 					                		</cfif>
 					                </div>
 					                <div class="col-lg-4 p-3">
-					                	<h6>Role</h6>
-					                		<cfif getprofile.role NEQ "">
-					                			<span class="font_style">#getprofile.role#</span>
+					                	<h6>Career Level</h6>
+					                		<cfif getprofile.career_name NEQ "">
+					                			<span class="font_style">#getprofile.career_name#</span>
+					                		<cfelse>
+					                			<span class="font_style_NA">NA</span>
+					                		</cfif>
+					                </div>
+					                <div class="col-lg-4 p-3">
+					                	<h6>Position</h6>
+					                		<cfif getprofile.design NEQ "">
+					                			<span class="font_style">#getprofile.design#</span>
 					                		<cfelse>
 					                			<span class="font_style_NA">NA</span>
 					                		</cfif>

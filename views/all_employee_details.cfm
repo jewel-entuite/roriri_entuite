@@ -162,7 +162,7 @@
                         <tr class="justify-content-center">
                           <td>#k#</td>
                           <td>#employeeDetails.first_name# #employeeDetails.last_name#</td>
-                          <td>#employeeDetails.designation#</td>
+                          <td>#employeeDetails.name#</td>
                           <td>#employeeDetails.mobile#</td>
                           <td>#employeeDetails.email#</td>
                           <!--- <td>#employeeDetails.aadhaar_number#</td> --->

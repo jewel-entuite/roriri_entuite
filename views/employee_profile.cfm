@@ -12,6 +12,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <title>RORIRI -Employee Management : Add Employee</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
@@ -35,6 +37,8 @@
     <cfif NOT structKeyExists(session, "employee")>
       <cflocation url="logout.cfm">
   </cfif>
+
+<cfinvoke component="models.employee" method="getDepartment" returnvariable="department">
 <cfinvoke component="models.logsheet" method="getLogs" returnvariable="userClock"/>
 <cfinvoke component="models.employee" method="getDesignation" returnvariable="designation">
 <cfinvoke component="models.employee" method="getrole" returnvariable="roles"/>
@@ -166,12 +170,12 @@
                     </div>
                   </div>
                 </div>
-             </cfif>
+              </cfif>
             </div>
             </div>
               <br>
               <div class="card shadow p-3 mb-5 bg-white rounded">
-                <h4 class="card-title m-4" style="color:##7d66e3;">KYC Details</h4>
+                <h4 class="card-title m-4" style="color:##7d66e3;">NIC Details</h4>
                 <div class="row mx-4">             
                   <div class="form-group col-lg-4">
                     <label style="font-size: small;" for="name">Aadhaar Number</label>
@@ -233,65 +237,76 @@
                 </div>
               </div>
             </div>
-                <br>
+            <br>
             <div class="card shadow p-3 mb-5 bg-white rounded">
               <h4 class="card-title m-4" style="color:##7d66e3;">Employment Details</h4>
               <div class="row mx-4">
-                <div class="form-group col-lg-6 p-3">
-                    <label style="font-size: small;" for="name">Designation</label>
-                    <!--- <input style="font-size: small;"  type="text" name="empDesg" id="empDesg" class="form-control" <cfif structKeyExists(url, "id")>value="#getprofile.designation#"</cfif><cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>> --->
-                    <select style="font-size:small;"  class="select form-select" name="empDesg" id="empDesg" required <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
-                      <option class="form-select" style="font-size: small;" value="">Choose Designation</option>
-                        <cfloop query="designation">
-                        <option class="form-select" style="font-size: small;" value="#designation.id#" <cfif structKeyExists(url, "id") AND getprofile.designation EQ designation.id>selected</cfif>>#designation.designation#</option>
-                      </cfloop>
-                    </select>
-                  </div>
-                  <div class="form-group col-lg-6 p-3">
-                    <label style="font-size: small;" for="start_date">Role</label>
-                    <!--- <input style="font-size: small;" type="text" name="empRoleid" id="empRoleid" class="form-control" <cfif structKeyExists(url, "id")>value="#getprofile.role#"</cfif><cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>> --->
-                    <select style="font-size:small;" class="select form-select" name="empRoleid" id="empRoleid" <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
-                      <option class="form-select" style="font-size: small;" value="">Select Role</option>
-                        <cfloop query="roles">
-                        <option class="form-select" style="font-size: small;" value="#roles.id#" <cfif structKeyExists(url, "id") AND getprofile.role_id EQ roles.id>selected</cfif>>#roles.role#</option>
-                      </cfloop>
-                    </select>
-                  </div>
+                <div class="form-group col-lg-4 p-3">
+                  <label style="font-size: small;" for="empDep">Department</label>
+                  <select style="font-size:small;"  class="select form-select" name="empDep" id="empDep" required  onchange="getCareerLevels()" <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
+                    <option class="form-select" style="font-size: small;" value="">Choose Designation</option>
+                    <cfloop query="department">
+                          <option value="#department.id#" <cfif structKeyExists(url, "id") AND getprofile.deparment_id EQ department.id>selected</cfif>>#department.name#</option>
+                        </cfloop>
+                  </select>
+                </div>
+                <div class="form-group col-lg-4 p-3">
+                  <label style="font-size: small;" for="empCarrier">Carrier Level</label>
+                  <select style="font-size: small;" class="form-select" name="empCarrier" id="empCarrier" onchange="getPositions()"required <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
+                    <option value="">Choose Career Level</option>
+                    <!--- <cfloop query="careerLevel">
+                      <option value="#careerLevel.id#">#careerLevel.name#</option>
+                    </cfloop> --->
+                  </select>
+                  <span id="empRolegerror" class="error" style="color: red;"></span>
+                </div>
+                <div class="form-group col-lg-4 p-3">
+                  <label style="font-size: small;" for="empPosition">Position</label>
+                  <select style="font-size: small;" class="form-select" name="empPosition" id="empPosition" required <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
+                    <option value="">Choose Position</option>
+                    <!--- <cfloop query="designation">
+                      <option value="#designation.id#">#designation.designation#</option>
+                    </cfloop> --->
+                  </select>
+                  <span id="empRolegerror" class="error" style="color: red;"></span>
+                </div>
               </div>
               <div class="row mx-4">
+                <div class="form-group col-lg-6 p-3">
+                    <label style="font-size: small;" for="stime">Date of Joining</label>
+                    <input style="font-size: small;" type="date" name="joining_date" class="form-control rounded border" id="joining_date"
+                        <cfif structKeyExists(url, "id")> value="#dateformat(getprofile.employee_joining_date, 'yyyy-mm-dd')#"</cfif>>
+                </div>
+                <div class="form-group col-lg-6 p-3">
+                  <label style="font-size: small;" for="employee_id">Employee Id</label>
+                  <input style="font-size: small;"  type="text" name="employee_id" class="form-control rounded border" id="employee_id" disabled <cfif structKeyExists(url, "id")>value="#getprofile.employee_id#"</cfif>>
+                </div>
+              </div>
+              <cfif structKeyExists(url, "id")>
+                <div class="row mx-4">
                   <div class="form-group col-lg-6 p-3">
-                      <label style="font-size: small;" for="stime">Date of Joining</label>
-                      <input style="font-size: small;"  type="date" name="joining_date" class="form-control rounded border" id="joining_date" <cfif structKeyExists(url, "id")> value="#dateformat(getprofile.employee_joining_date, 'yyyy-mm-dd')#"</cfif>>
+                      <input type="checkbox" id="employee_status" name="employee_status" 
+                          <cfif getprofile.status EQ 0>checked</cfif> 
+                          onchange="toggleRelievingDate()">
+                      <label style="font-size: small;">Relieving status</label>
                   </div>
-                  <div class="form-group col-lg-6 p-3">
+                </div>
+                <div class="row mx-4">
+                  <div class="form-group col-lg-6 p-3" id="relieving_date_container" style="<cfif structKeyExists(url, 'id') AND getprofile.status EQ 0>display:block;<cfelse>display:none;</cfif>">
                       <label style="font-size: small;" for="stime">Relieving Date</label>
                       <input style="font-size: small;" type="date" name="relieving_date" class="form-control rounded border" id="relieving_date" <cfif structKeyExists(url, "id")> value="#dateFormat(getprofile.employee_relieving_date, 'yyyy-mm-dd')#"</cfif>>
                   </div>
-              </div>
-              <cfif structKeyExists(url, "id")>
-              <div class="row mx-4">
-                  <div class="form-group col-lg-6 p-3">
+                  <div class="form-group col-lg-6 p-3" id="relieving_reason_container" style="<cfif structKeyExists(url, 'id') AND getprofile.status EQ 0>display:block;<cfelse>display:none;</cfif>">
+                      <label style="font-size: small;" for="stime">Relieving Reason</label>
+                      <!--- <input style="font-size: small;" type="date" name="relieving_reason" class="form-control rounded border" id="relieving_reason" <cfif structKeyExists(url, "id")> value="#dateFormat(getprofile.employee_relieving_date, 'yyyy-mm-dd')#"</cfif>> --->
+                      <textarea name="relieving_reason" id="relieving_reason" class="form-control rounded border"><cfif structKeyExists(url, "id")>#getprofile.employee_relieving_reason#</cfif></textarea>
                   </div>
-                  <div class="form-group col-lg-6 p-3">
-                      <input type="checkbox" id="employee_status" name="employee_status" <cfif getprofile.status EQ 0>checked</cfif>>
-                      <label style="font-size: small;">Relieving status</label>
-                  </div>
-              </div>
-            </cfif>
-            <div class="row mx-4">
-                  <div class="form-group col-lg-6 p-3">
-                      <label style="font-size: small;" for="employee_id">Employee Id</label>
-                      <input style="font-size: small;"  type="text" name="employee_id" class="form-control rounded border" id="employee_id" disabled <cfif structKeyExists(url, "id")>value="#getprofile.employee_id#"</cfif>>
-                  </div>
-                 <!---  <div class="form-group col-lg-6 p-3">
-                      <label style="font-size: small;" for="stime">Relieving Date</label>
-                      <input style="font-size: small;" type="date" name="relieving_date" class="form-control rounded border" id="relieving_date">
-                  </div> --->
-              </div>
-            </div>
-             <div class="form-group mt-3">
-                  <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" id="submitButton" class="btn">Update Profile</button></div>
                 </div>
+              </cfif>
+            </div>
+            <div class="form-group mt-3">
+              <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" id="submitButton" class="btn">Update Profile</button></div>
+            </div>
             </form>
           </div>
         </div>
@@ -300,36 +315,155 @@
   </cfoutput>
 
   <script>
-    function checkbox(){
-          var checked=document.getElementById("c1").checked;
-          var pAddress=document.getElementById("p_address").value;
-          if(checked){
-            document.getElementById("c_address").value=pAddress;
-          }
-          else{
-            document.getElementById("c_address").value="";
-          }
+    document.addEventListener("DOMContentLoaded", function () {
+        var departmentId = "<cfoutput>#getprofile.deparment_id#</cfoutput>";
+        var careerId = "<cfoutput>#getprofile.career_id#</cfoutput>";
+        var positionId = "<cfoutput>#getprofile.designation_id#</cfoutput>";
+
+        if (departmentId) {
+            getCareerLevels(careerId, positionId);
         }
+    });
+
+    function toggleRelievingDate() {
+      var checkbox = document.getElementById("employee_status");
+      var relievingDateContainer = document.getElementById("relieving_date_container");
+      var relievingReasonContainer = document.getElementById("relieving_reason_container");
+      
+      if (checkbox.checked) {
+          relievingDateContainer.style.display = "block";
+          relievingReasonContainer.style.display = "block";
+      } else {
+          relievingDateContainer.style.display = "none";
+          relievingReasonContainer.style.display = "none";
+      }
+    }
+
+    // Ensure correct visibility on page load
+    window.onload = function() {
+        toggleRelievingDate();
+    };
+
+    function getCareerLevels(selectedCareerId = null, selectedPositionId = null) {
+      var departmentDropdown = document.getElementById("empDep");
+      var departmentId = departmentDropdown.value;
+
+      var overlay = document.getElementById('overlay');
+      var loader = document.getElementById('loader');
+      if (overlay) overlay.style.display = 'block';
+      if (loader) loader.style.display = 'block';
+
+      $.ajax({
+          type: 'POST',
+          url: '../models/employee.cfc',
+          dataType: 'json',
+          data: {
+              method: 'careerLevelList',
+              department_id: departmentId
+          },
+          success: function(response) {
+              if (overlay) overlay.style.display = 'none';
+              if (loader) loader.style.display = 'none';
+
+              var careerLevelDropdown = document.getElementById("empCarrier");
+
+              careerLevelDropdown.innerHTML = '<option value="">Please select</option>';
+              document.getElementById("empPosition").innerHTML = '<option value="">Please select</option>'; // Reset position dropdown too
+
+              if (response && response.DATA) {
+                  response.DATA.forEach(function(row) {
+                      var option = document.createElement("option");
+                      option.value = row[0]; // ID
+                      option.text = row[1];  // Name
+                      careerLevelDropdown.appendChild(option);
+
+                      if (selectedCareerId && selectedCareerId == row[0]) {
+                          option.selected = true;
+                          getPositions(selectedPositionId); // Fetch positions based on career level
+                      }
+                  });
+              }
+          },
+          error: function(xhr, status, error) {
+              console.error("Error fetching career levels:", error);
+          }
+      });
+    }
+
+    function getPositions(selectedPositionId = null) {
+      var careerDropdown = document.getElementById("empCarrier");
+      var careerId = careerDropdown.value;
+
+      var overlay = document.getElementById('overlay');
+      var loader = document.getElementById('loader');
+      if (overlay) overlay.style.display = 'block';
+      if (loader) loader.style.display = 'block';
+
+      $.ajax({
+          type: 'POST',
+          url: '../models/employee.cfc',
+          dataType: 'json',
+          data: {
+              method: 'getDesignation',
+              career_level_id: careerId
+          },
+          success: function(response) {
+              if (overlay) overlay.style.display = 'none';
+              if (loader) loader.style.display = 'none';
+
+              var positionDropdown = document.getElementById("empPosition");
+
+              positionDropdown.innerHTML = '<option value="">Please select</option>';
+
+              if (response && response.DATA) {
+                  response.DATA.forEach(function(row) {
+                      var option = document.createElement("option");
+                      option.value = row[0]; // ID
+                      option.text = row[1];  // Name
+                      positionDropdown.appendChild(option);
+
+                      if (selectedPositionId && selectedPositionId == row[0]) {
+                          option.selected = true;
+                      }
+                  });
+              }
+          },
+          error: function(xhr, status, error) {
+              console.error("Error fetching position:", error);
+          }
+      });
+    }
+
+    function checkbox(){
+      var checked=document.getElementById("c1").checked;
+      var pAddress=document.getElementById("p_address").value;
+      if(checked){
+        document.getElementById("c_address").value=pAddress;
+      }
+      else{
+        document.getElementById("c_address").value="";
+      }
+    }
   </script>
 
   <script>
     function check(){
       var statuschecked = document.getElementById("employee_status").checked;
-     if (statuschecked) {
-      var relivingdate = document.getElementById("relieving_date").value;
-      if (relivingdate == "") {
-        alert("Relieving Date must be filled");
-        return false;
+      if (statuschecked) {
+        var relivingdate = document.getElementById("relieving_date").value;
+        var relivingReason = document.getElementById("relieving_reason").value;
+        if (relivingdate == "" || relivingReason == "") {
+          alert("Relieving Date and Reason must be filled");
+          return false;
+        }
       }
-     }
-    document.getElementById("submitButton").disabled=true;
-    document.getElementById("submitButton").style.background="rgba(240, 92, 28, 0.7)";
-    document.getElementById("submitButton").innerHTML="Sending, please wait...";
+      document.getElementById("submitButton").disabled=true;
+      document.getElementById("submitButton").style.background="rgba(240, 92, 28, 0.7)";
+      document.getElementById("submitButton").innerHTML="Sending, please wait...";
      
     }
   </script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
  function showConfirmation(e, id, name) {
     e.preventDefault();
