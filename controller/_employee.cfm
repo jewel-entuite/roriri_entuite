@@ -1,4 +1,5 @@
 <cfoutput>
+	<!--- <cfdump var="#form#"><cfabort> --->
 	<cfif NOT structKeyExists(session, "employee")>
 	    <cflocation url="../views/logout.cfm">
 	</cfif>
@@ -15,6 +16,7 @@
 
 	<cfif structKeyExists(form, "u_profile")>
 		<cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID EQ "1">
+			<!--- <cfdump var="#session#"><cfabort> --->
 			<cfinvoke component="models.employee" method="updateProfileAdmin" u_id="#decrypt(url.id, 'RHMm64ACs6qftCFBz4j+5Q==', 'AES','HEX')#" argumentcollection="#form#">
 			<cflocation url="../views/all_employee_details.cfm?update">
 		<cfelse>

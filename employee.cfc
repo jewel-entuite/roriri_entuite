@@ -6,59 +6,6 @@
 		<cfreturn designation>
 	</cffunction>
 
-	<cffunction name="getCareerLevels" access="remote" returntype="any" output="false">
-	    <cfargument name="departmentId" type="numeric" required="true">
-	    <cftry>
-	        <cfquery name="careerLevels" datasource="yourDatasource">
-	            SELECT id, name FROM career_level 
-	            WHERE department_id = <cfqueryparam value="#arguments.departmentId#" cfsqltype="cf_sql_integer">
-	        </cfquery>
-
-	        <cfset result = []>
-	        <cfloop query="careerLevels">
-	            <cfset arrayAppend(result, { "id": careerLevels.id, "name": careerLevels.name })>
-	        </cfloop>
-
-	        <cfcontent type="application/json" />
-	        <cfoutput>#serializeJSON(result)#</cfoutput>
-
-	    <cfcatch>
-	        <cfcontent type="application/json" />
-	        <cfoutput>#serializeJSON({ "error": cfcatch.message })#</cfoutput>
-	    </cfcatch>
-	    </cftry>
-	</cffunction>
-	
-    <cffunction name="getPositions" access="remote" returntype="any" output="false">
-	    <cfargument name="careerLevelId" type="numeric" required="true">
-
-	    <cfquery name="positions" datasource="yourDatasource">
-	        SELECT id, designation FROM designation 
-	        WHERE career_level_id = <cfqueryparam value="#arguments.careerLevelId#" cfsqltype="cf_sql_integer">
-	    </cfquery>
-
-	    <cfset result = []>
-	    <cfloop query="positions">
-	        <cfset arrayAppend(result, { "id": positions.id, "designation": positions.designation })>
-	    </cfloop>
-
-	    <cfreturn serializeJSON(result)>
-	</cffunction>
-
-	<cffunction name="getCareerLevel">
-		<cfquery name="careerLevel">
-			SELECT * FROM career_level
-		</cfquery>
-		<cfreturn careerLevel>
-	</cffunction>
-
-	<cffunction name="getDepartment">
-		<cfquery name="department">
-			SELECT * FROM department
-		</cfquery>
-		<cfreturn department>
-	</cffunction>
-
 	<cffunction name="getrole">
 		<cfquery name="roles">
 		SELECT * FROM role
@@ -70,71 +17,27 @@
 		<cfset oneTimePass= randRange(100000, 999999)>
 		<cfquery name="insertEmpDetails"  result="emp_result">
 			INSERT INTO employee SET
-			<cfif structKeyExists(form, "Fname") and len(form.Fname)>
-				first_name = <cfqueryparam value="#form.Fname#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "Lname") and len(form.Lname)>
-				last_name = <cfqueryparam value="#form.Lname#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "mbnum") and len(form.mbnum)>
-				mobile = <cfqueryparam value="#form.mbnum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "emnum") and len(form.emnum)>
-				emergency_contact = <cfqueryparam value="#form.emnum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "email") and len(form.email)>
-				email = <cfqueryparam value="#form.email#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "aadhaarNum") and len(form.aadhaarNum)>
-				aadhaar_number = <cfqueryparam value="#form.aadhaarNum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "empDep") and len(form.empDep)>
-				department_id = <cfqueryparam value="#form.empDep#" cfsqltype="cf_sql_integer">,
-			</cfif>
-			<cfif structKeyExists(form, "empCarrier") and len(form.empCarrier)>
-				carrier_level_id = <cfqueryparam value="#form.empCarrier#" cfsqltype="cf_sql_integer">,
-			</cfif>
-			<cfif structKeyExists(form, "empPosition") and len(form.empPosition)>
-				position_id = <cfqueryparam value="#form.empPosition#" cfsqltype="cf_sql_integer">,
-			</cfif>
-			<cfif structKeyExists(form, "empMrgStatus") and len(form.empMrgStatus)>
-				marital_status = <cfqueryparam value="#form.empMrgStatus#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "c_address") and len(form.c_address)>
-				current_address = <cfqueryparam value="#form.c_address#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "p_address") and len(form.p_address)>
-				permanent_address = <cfqueryparam value="#form.p_address#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "fathername") and len(form.fathername)>
-				name_of_father = <cfqueryparam value="#form.fathername#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "panNum") and len(form.panNum)>
-				pan_number = <cfqueryparam value="#form.panNum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "passNum") and len(form.passNum)>
-				passport_number = <cfqueryparam value="#form.passNum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "npsNum") and len(form.npsNum)>
-				nps_acct_number = <cfqueryparam value="#form.npsNum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "employee_id") and len(form.employee_id)>
-				employee_id = <cfqueryparam value="#form.employee_id#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "pfNum") and len(form.pfNum)>
-				pf_acct_number = <cfqueryparam value="#form.pfNum#" cfsqltype="cf_sql_varchar">,
-			</cfif>
-			<cfif structKeyExists(form, "DOB") and len(form.DOB)>
-				DOB = <cfqueryparam value="#form.DOB#" cfsqltype="cf_sql_date">,
-			</cfif>
-			<cfif structKeyExists(form, "joining_date") and len(form.joining_date)>
-				employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">,
-			</cfif>
-			<cfif structKeyExists(form, "relieving_date") and len(form.relieving_date)>
-				employee_relieving_date = <cfqueryparam value="#form.relieving_date#" cfsqltype="cf_sql_date">,
-			</cfif>
+			first_name = <cfqueryparam value="#form.Fname#" cfsqltype="cf_sql_varchar">,
+			last_name = <cfqueryparam value="#form.Lname#" cfsqltype="cf_sql_varchar">,
+			mobile = <cfqueryparam value="#form.mbnum#" cfsqltype="cf_sql_varchar">,
+			emergency_contact = <cfqueryparam value="#form.emnum#" cfsqltype="cf_sql_varchar">,
+			email = <cfqueryparam value="#form.email#" cfsqltype="cf_sql_varchar">,
+			aadhaar_number = <cfqueryparam value="#form.aadhaarNum#" cfsqltype="cf_sql_varchar">,
+			designation = <cfqueryparam value="#form.empDesg#" cfsqltype="cf_sql_integer">,
+			role_id = <cfqueryparam value="#form.empRoleid#" cfsqltype="cf_sql_integer">,
+			marital_status = <cfqueryparam value="#form.empMrgStatus#" cfsqltype="cf_sql_varchar">,
+			current_address = <cfqueryparam value="#form.c_address#" cfsqltype="cf_sql_varchar">,
+			permanent_address = <cfqueryparam value="#form.p_address#" cfsqltype="cf_sql_varchar">,
+			name_of_father = <cfqueryparam value="#form.fathername#" cfsqltype="cf_sql_varchar">,
+			pan_number = <cfqueryparam value="#form.panNum#" cfsqltype="cf_sql_varchar">,
+			passport_number = <cfqueryparam value="#form.passNum#" cfsqltype="cf_sql_varchar">,
+			nps_acct_number = <cfqueryparam value="#form.npsNum#" cfsqltype="cf_sql_varchar">,
+			employee_id = <cfqueryparam value="#form.employee_id#" cfsqltype="cf_sql_varchar">,
+			pf_acct_number = <cfqueryparam value="#form.pfNum#" cfsqltype="cf_sql_varchar">,
 			OTP = <cfqueryparam value="#oneTimePass#" cfsqltype="cf_sql_varchar">,
-			employee_created_date = <cfqueryparam value="#now()#" cfsqltype="cf_sql_timestamp">
+			DOB = <cfqueryparam value="#form.DOB#" cfsqltype="cf_sql_date">,
+			employee_created_date = <cfqueryparam value="#dateTimeFormat(now())#" cfsqltype="cf_sql_timestamp">,
+			employee_joining_date = <cfqueryparam value="#form.joining_date#" cfsqltype="cf_sql_date">
 		</cfquery>
 		<cfquery name="adminMail">
 			SELECT email FROM employee
