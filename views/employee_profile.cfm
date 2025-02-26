@@ -38,7 +38,8 @@
       <cflocation url="logout.cfm">
   </cfif>
 
-<cfinvoke component="models.employee" method="getDepartment" returnvariable="department">
+<!--- <cfinvoke component="models.employee" method="getDepartment" returnvariable="department"> --->
+<cfinvoke component="models.employee" method="careerLevelList" returnvariable="careerLevel">
 <cfinvoke component="models.logsheet" method="getLogs" returnvariable="userClock"/>
 <cfinvoke component="models.employee" method="getDesignation" returnvariable="designation">
 <cfinvoke component="models.employee" method="getrole" returnvariable="roles"/>
@@ -238,37 +239,38 @@
               </div>
             </div>
             <br>
+            <cfdump var="#getprofile#"><cfabort>
             <div class="card shadow p-3 mb-5 bg-white rounded">
               <h4 class="card-title m-4" style="color:##7d66e3;">Employment Details</h4>
               <div class="row mx-4">
                 <div class="form-group col-lg-4 p-3">
-                  <label style="font-size: small;" for="empDep">Department</label>
-                  <select style="font-size:small;"  class="select form-select" name="empDep" id="empDep" required  onchange="getCareerLevels()" <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
-                    <option class="form-select" style="font-size: small;" value="">Choose Designation</option>
-                    <cfloop query="department">
-                          <option value="#department.id#" <cfif structKeyExists(url, "id") AND getprofile.deparment_id EQ department.id>selected</cfif>>#department.name#</option>
-                        </cfloop>
-                  </select>
-                </div>
-                <div class="form-group col-lg-4 p-3">
                   <label style="font-size: small;" for="empCarrier">Carrier Level</label>
                   <select style="font-size: small;" class="form-select" name="empCarrier" id="empCarrier" onchange="getPositions()"required <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
                     <option value="">Choose Career Level</option>
-                    <!--- <cfloop query="careerLevel">
-                      <option value="#careerLevel.id#">#careerLevel.name#</option>
-                    </cfloop> --->
+                    <cfloop query="careerLevel">
+                      <option value="#careerLevel.id#" <cfif structKeyExists(url, "id") AND getprofile.career_id EQ careerLevel.id>selected</cfif>>#careerLevel.name#</option>
+                    </cfloop>
                   </select>
                   <span id="empRolegerror" class="error" style="color: red;"></span>
                 </div>
                 <div class="form-group col-lg-4 p-3">
                   <label style="font-size: small;" for="empPosition">Position</label>
-                  <select style="font-size: small;" class="form-select" name="empPosition" id="empPosition" required <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
+                  <select style="font-size: small;" class="form-select" name="empPosition" id="empPosition" required onchange="getDepartment()" <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
                     <option value="">Choose Position</option>
                     <!--- <cfloop query="designation">
                       <option value="#designation.id#">#designation.designation#</option>
                     </cfloop> --->
                   </select>
                   <span id="empRolegerror" class="error" style="color: red;"></span>
+                </div>
+                <div class="form-group col-lg-4 p-3">
+                  <label style="font-size: small;" for="empDep">Department</label>
+                  <select style="font-size:small;"  class="select form-select" name="empDep" id="empDep" required  <cfif structKeyExists(session, "EMPLOYEE") AND session.EMPLOYEE.ROLE_ID NEQ "1">disabled</cfif>>
+                    <option class="form-select" style="font-size: small;" value="">Choose Designation</option>
+                    <!--- <cfloop query="department">
+                          <option value="#department.id#" <cfif structKeyExists(url, "id") AND getprofile.deparment_id EQ department.id>selected</cfif>>#department.name#</option>
+                        </cfloop> --->
+                  </select>
                 </div>
               </div>
               <div class="row mx-4">
@@ -344,60 +346,78 @@
         toggleRelievingDate();
     };
 
-    function getCareerLevels(selectedCareerId = null, selectedPositionId = null) {
+    function getDepartment(selected_id = null) {
+      var positionDropdown = document.getElementById("empPosition");
       var departmentDropdown = document.getElementById("empDep");
-      var departmentId = departmentDropdown.value;
 
-      var overlay = document.getElementById('overlay');
-      var loader = document.getElementById('loader');
-      if (overlay) overlay.style.display = 'block';
-      if (loader) loader.style.display = 'block';
+      departmentDropdown.innerHTML = '<option value="">Please select</option>';
+      departmentDropdown.setAttribute("disabled", "true");
+
+      if (!positionDropdown.value) {
+          return;
+      }
+
+      var positionName = positionDropdown.options[positionDropdown.selectedIndex].text;
+      document.getElementById("position_name").value = positionName;
+
+      var positionId = positionDropdown.value;
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('loader').style.display = 'block';
 
       $.ajax({
           type: 'POST',
           url: '../models/employee.cfc',
           dataType: 'json',
           data: {
-              method: 'careerLevelList',
-              department_id: departmentId
+              method: 'departmentLists',
+              designation_id: positionId
           },
           success: function(response) {
-              if (overlay) overlay.style.display = 'none';
-              if (loader) loader.style.display = 'none';
+              document.getElementById('overlay').style.display = 'none';
+              document.getElementById('loader').style.display = 'none';
 
-              var careerLevelDropdown = document.getElementById("empCarrier");
-
-              careerLevelDropdown.innerHTML = '<option value="">Please select</option>';
-              document.getElementById("empPosition").innerHTML = '<option value="">Please select</option>'; // Reset position dropdown too
-
-              if (response && response.DATA) {
+              if (response && response.DATA.length > 0) {
+                  departmentDropdown.removeAttribute("disabled"); 
+                  
                   response.DATA.forEach(function(row) {
                       var option = document.createElement("option");
-                      option.value = row[0]; // ID
-                      option.text = row[1];  // Name
-                      careerLevelDropdown.appendChild(option);
-
-                      if (selectedCareerId && selectedCareerId == row[0]) {
-                          option.selected = true;
-                          getPositions(selectedPositionId); // Fetch positions based on career level
-                      }
+                      option.value = row[0]; // Department ID
+                      option.text = row[1];  // Department Name
+                      departmentDropdown.appendChild(option);
                   });
+
+                  if (selected_id) {
+                      departmentDropdown.value = selected_id;
+                  }
               }
           },
           error: function(xhr, status, error) {
-              console.error("Error fetching career levels:", error);
+              console.error("Error fetching departments:", error);
           }
       });
     }
 
-    function getPositions(selectedPositionId = null) {
+    function getPositions(selected_id = null) {
       var careerDropdown = document.getElementById("empCarrier");
-      var careerId = careerDropdown.value;
+      var positionDropdown = document.getElementById("empPosition");
+      var departmentDropdown = document.getElementById("empDep");
 
-      var overlay = document.getElementById('overlay');
-      var loader = document.getElementById('loader');
-      if (overlay) overlay.style.display = 'block';
-      if (loader) loader.style.display = 'block';
+      positionDropdown.innerHTML = '<option value="">Please select</option>';
+      positionDropdown.setAttribute("disabled", "true");
+      
+      departmentDropdown.innerHTML = '<option value="">Please select</option>';
+      departmentDropdown.setAttribute("disabled", "true");
+
+      if (!careerDropdown.value) {
+          return;
+      }
+
+      var PositionName = careerDropdown.options[careerDropdown.selectedIndex].text;
+      document.getElementById("position_name").value = PositionName;
+
+      var careerId = careerDropdown.value;
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('loader').style.display = 'block';
 
       $.ajax({
           type: 'POST',
@@ -408,28 +428,26 @@
               career_level_id: careerId
           },
           success: function(response) {
-              if (overlay) overlay.style.display = 'none';
-              if (loader) loader.style.display = 'none';
+              document.getElementById('overlay').style.display = 'none';
+              document.getElementById('loader').style.display = 'none';
 
-              var positionDropdown = document.getElementById("empPosition");
+              if (response && response.DATA.length > 0) {
+                  positionDropdown.removeAttribute("disabled"); 
 
-              positionDropdown.innerHTML = '<option value="">Please select</option>';
-
-              if (response && response.DATA) {
                   response.DATA.forEach(function(row) {
                       var option = document.createElement("option");
-                      option.value = row[0]; // ID
-                      option.text = row[1];  // Name
+                      option.value = row[0]; // Position ID
+                      option.text = row[1];  // Position Name
                       positionDropdown.appendChild(option);
-
-                      if (selectedPositionId && selectedPositionId == row[0]) {
-                          option.selected = true;
-                      }
                   });
+
+                  if (selected_id) {
+                      positionDropdown.value = selected_id;
+                  }
               }
           },
           error: function(xhr, status, error) {
-              console.error("Error fetching position:", error);
+              console.error("Error fetching positions:", error);
           }
       });
     }

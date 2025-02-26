@@ -1,21 +1,23 @@
 <cfcomponent>
 
-    <!--- <cffunction name="careerLevelList" access="remote" returnformat="JSON">
-	    <cfargument name="department_id" default="" required="true">
+    <cffunction name="departmentLists" access="remote" returnformat="JSON">
+	    <cfargument name="designation_id" default="" required="true">
 
-	    <cfquery name="careerLevels">
-	        SELECT id, name FROM career_level
-	        WHERE department_id = <cfqueryparam value="#arguments.department_id#" cfsqltype="cf_sql_integer"/>
+	    <cfquery name="departmentList">
+	        SELECT dd.department_id AS id, d.name AS department_name 
+			FROM designation_department dd
+			INNER JOIN department d ON dd.department_id = d.id
+			WHERE dd.designation_id = <cfqueryparam value="#arguments.designation_id#" cfsqltype="cf_sql_integer"/>
 	    </cfquery>
 
-	    <cfreturn careerLevels>
-	</cffunction> --->
+	    <cfreturn departmentList>
+	</cffunction>
 
 	<cffunction name="getDesignation" access="remote" returnformat="JSON">
 	    <cfargument name="career_level_id" default="" required="true">
 
 	    <cfquery name="designation">
-			SELECT career_level_id, name FROM designation
+			SELECT id, name FROM designation
 			<cfif structKeyExists(arguments, "career_level_id") AND len(arguments.career_level_id)>
 				WHERE career_level_id = <cfqueryparam value="#arguments.career_level_id#" cfsqltype="cf_sql_integer"/>
 			</cfif>
@@ -45,6 +47,7 @@
 	</cffunction>	
 
 	<cffunction name="insertEmployeeDetails">
+		<!--- <cfdump var="#form#"><cfabort> --->
 		<cfset oneTimePass= randRange(100000, 999999)>
 		<cfquery name="insertEmpDetails"  result="emp_result">
 			INSERT INTO employee SET
@@ -152,7 +155,7 @@
 	<cffunction name="emp_profile">
 		<cfargument name="user_id" default="">
 		<cfquery name="getprofile">
-			SELECT E.*,R.*,DE.id AS deparment_id, DE.name AS deparment_name, CL.id AS career_id, CL.name AS career_name, D.id AS designation_id, D.designation AS design FROM employee E
+			SELECT E.*,R.*,DE.id AS deparment_id, DE.name AS deparment_name, CL.id AS career_id, CL.name AS career_name, D.id AS designation_id, D.name AS design FROM employee E
 			LEFT JOIN role R ON R.id = E.role_id
 			LEFT JOIN designation D ON D.id = E.position_id
 			LEFT JOIN career_level CL ON CL.id = E.carrier_level_id
