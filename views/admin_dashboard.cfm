@@ -647,7 +647,45 @@
   <!-- Template Main JS File -->
   <script src="../assets/js/main.js"></script>
 <script>
-     function update1(){
+    window.onload = function() {
+      // Function to get a URL parameter
+      function getUrlParameter(name) {
+        var url = new URL(window.location.href);
+        var paramValue = url.searchParams.get(name);
+        return paramValue;
+      }
+
+      // Function to remove a URL parameter
+      function removeUrlParameter(param) {
+        var url = new URL(window.location.href);
+        url.searchParams.delete(param);
+        window.history.replaceState({}, document.title, url.toString());
+      }
+
+      // Check if 'success' exists in the URL
+      if (getUrlParameter('s') !== null) {
+        // Display the overlay and alert
+        // document.getElementById('overlay').style.display = 'block';
+        // document.getElementById('successAlert').style.display = 'block';
+        showSuccessAlert();
+        
+        // Remove 'success' key from the URL
+          removeUrlParameter('s');
+        // Reload the page without the 'success' parameter in the URL
+          location.reload();
+
+        // Remove 'success' from the URL after a short delay
+        setTimeout(function() {
+          // Hide the overlay and alert after 3 seconds
+          // document.getElementById('overlay').style.display = 'none';
+          // document.getElementById('successAlert').style.display = 'none';
+          hideSuccessAlert();
+
+        }, 3000); // Adjust the timeout duration as needed
+      }
+    };
+
+    function update1(){
         var project = document.getElementById("project").value;
         var mod = document.getElementById("module").value;
         var req = document.getElementById("req").value;
