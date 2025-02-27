@@ -312,7 +312,7 @@
                     </div>
                     <div class="form-group col-lg-6 p-3">
                       <label style="font-size: small;" for="employee_id">Employee Id</label>
-                      <input style="font-size: small;" type="text" name="employee_id" class="form-control rounded border" id="employee_id" onchange="validlEmployeeid()">
+                      <input style="font-size: small;" type="text" name="employee_id" class="form-control rounded border" id="employee_id">
                     </div>
                   </div>
                 </fieldset>
@@ -531,7 +531,7 @@
         var emnum = document.getElementById("emnum").value;
         var fathername = document.getElementById("fathername").value;
         var empDesg = document.getElementById("empDep").value;
-        var empRoleid = document.getElementById("empRoleid").value;
+        var empRoleid = document.getElementById("empPosition").value;
         var aadhaarNum = document.getElementById("aadhaarNum").value;
         var aadharReg = /^([0-9]{4}[0-9]{4}[0-9]{4}$)|([0-9]{4}\s[0-9]{4}\s[0-9]{4}$)|([0-9]{4}-[0-9]{4}-[0-9]{4}$)/;
         var mobileReg = /^[0-9]{10,10}$/;
@@ -572,14 +572,14 @@
           document.getElementById("fathername").focus();
           return false;
         }
+        else if(empRoleid==""){
+          document.getElementById("empRoleerror").innerHTML="*This is Required field";
+          document.getElementById("empPosition").focus();
+          return false;
+        }
         else if(empDesg==""){
           document.getElementById("empDesgerror").innerHTML="*This is Required field";
           document.getElementById("empDep").focus();
-          return false;
-        }
-        else if(empRoleid==""){
-          document.getElementById("empRoleerror").innerHTML="*This is Required field";
-          document.getElementById("empRoleid").focus();
           return false;
         }
         else if(!aadharReg.test(aadhaarNum)){

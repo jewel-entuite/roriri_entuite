@@ -9,7 +9,7 @@
 	<cfif newstruct.adminMail NEQ "" AND newstruct.oneTimePass NEQ "">
 		<!--- <cfmail to = "#form.email#" from = "#newstruct.adminMail#" subject = "Username = #form.mbnum# Password = #newstruct.oneTimePass#"> 
 		</cfmail> --->
-		<cflocation url="../views/admin_dashboard.cfm?s">
+		<cflocation url="../views/all_employee_details.cfm?s">
 	<cfelse>
 		<cflocation url="../views/admin_dashboard.cfm">
 	</cfif>
