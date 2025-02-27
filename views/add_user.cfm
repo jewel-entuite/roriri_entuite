@@ -180,7 +180,7 @@
                     </div>
                     <div class="form-group col-lg-4 p-3">
                       <label style="font-size: small;" for="name">Father's Name</label>
-                      <input style="font-size: small;" type="text" class="form-control" name="fathername" id="fathername" placeholder="Father's Name" onfocusout="validfathername()" required>
+                      <input style="font-size: small;" type="text" class="form-control" name="fathername" id="fathername" placeholder="Father's Name" required>
                       <span id="fathererror" class="error" style="color: red;"></span>
                     </div>
                     <div class="form-group col-md-4 p-3">
@@ -317,7 +317,8 @@
                   </div>
                 </fieldset>
                 <div class="form-group mt-3">
-                  <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" onclick="return finalcheck()" id="submitButton" class="btn">Add Employee</button></div>
+                  <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" id="submitButton" class="btn">Add Employee</button></div>
+                  <!--- <div class="text-center"><button style="background: ##7d66e3;border: 0;padding: 10px 24px;color: ##fff;transition: 0.4s;border-radius: 4px;" type="submit" onclick="return finalcheck()" id="submitButton" class="btn">Add Employee</button></div> --->
                 </div>
                 <input type="hidden" id="department_name">
                 <input type="hidden" id="careerLevel_name">
@@ -340,111 +341,113 @@
   </script>
 
     <script>
-      function getDepartment(selected_id = null) {
-        var positionDropdown = document.getElementById("empPosition");
-        var departmentDropdown = document.getElementById("empDep");
-
-        departmentDropdown.innerHTML = '<option value="">Please select</option>';
-        departmentDropdown.setAttribute("disabled", "true");
-
-        if (!positionDropdown.value) {
-            return;
-        }
-
-        var positionName = positionDropdown.options[positionDropdown.selectedIndex].text;
-        document.getElementById("position_name").value = positionName;
-
-        var positionId = positionDropdown.value;
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('loader').style.display = 'block';
-
-        $.ajax({
-            type: 'POST',
-            url: '../models/employee.cfc',
-            dataType: 'json',
-            data: {
-                method: 'departmentLists',
-                designation_id: positionId
-            },
-            success: function(response) {
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('loader').style.display = 'none';
-
-                if (response && response.DATA.length > 0) {
-                    departmentDropdown.removeAttribute("disabled"); 
-                    
-                    response.DATA.forEach(function(row) {
-                        var option = document.createElement("option");
-                        option.value = row[0]; // Department ID
-                        option.text = row[1];  // Department Name
-                        departmentDropdown.appendChild(option);
-                    });
-
-                    if (selected_id) {
-                        departmentDropdown.value = selected_id;
-                    }
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching departments:", error);
-            }
-        });
-      }
-
       function getPositions(selected_id = null) {
-        var careerDropdown = document.getElementById("empCarrier");
-        var positionDropdown = document.getElementById("empPosition");
-        var departmentDropdown = document.getElementById("empDep");
+    var careerDropdown = document.getElementById("empCarrier");
+    var positionDropdown = document.getElementById("empPosition");
+    var departmentDropdown = document.getElementById("empDep");
 
-        positionDropdown.innerHTML = '<option value="">Please select</option>';
-        positionDropdown.setAttribute("disabled", "true");
-        
-        departmentDropdown.innerHTML = '<option value="">Please select</option>';
-        departmentDropdown.setAttribute("disabled", "true");
+    positionDropdown.innerHTML = '<option value="">Please select</option>';
+    positionDropdown.setAttribute("disabled", "true");
+    
+    departmentDropdown.innerHTML = '<option value="">Please select</option>';
+    departmentDropdown.setAttribute("disabled", "true");
 
-        if (!careerDropdown.value) {
-            return;
-        }
+    if (!careerDropdown.value) {
+        return;
+    }
 
-        var PositionName = careerDropdown.options[careerDropdown.selectedIndex].text;
-        document.getElementById("position_name").value = PositionName;
+    var careerId = careerDropdown.value;
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loader').style.display = 'block';
 
-        var careerId = careerDropdown.value;
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('loader').style.display = 'block';
+    $.ajax({
+        type: 'POST',
+        url: '../models/employee.cfc',
+        dataType: 'json',
+        data: {
+            method: 'getDesignation',
+            career_level_id: careerId
+        },
+        success: function(response) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
 
-        $.ajax({
-            type: 'POST',
-            url: '../models/employee.cfc',
-            dataType: 'json',
-            data: {
-                method: 'getDesignation',
-                career_level_id: careerId
-            },
-            success: function(response) {
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('loader').style.display = 'none';
+            if (response && response.DATA.length > 0) {
+                positionDropdown.removeAttribute("disabled");
 
-                if (response && response.DATA.length > 0) {
-                    positionDropdown.removeAttribute("disabled"); 
+                response.DATA.forEach(function(row) {
+                    var option = document.createElement("option");
+                    option.value = row[0]; // Position ID
+                    option.text = row[1];  // Position Name
+                    positionDropdown.appendChild(option);
+                });
 
-                    response.DATA.forEach(function(row) {
-                        var option = document.createElement("option");
-                        option.value = row[0]; // Position ID
-                        option.text = row[1];  // Position Name
-                        positionDropdown.appendChild(option);
-                    });
-
-                    if (selected_id) {
-                        positionDropdown.value = selected_id;
-                    }
+                // Auto-select if only one record exists
+                if (response.DATA.length === 1) {
+                    positionDropdown.value = response.DATA[0][0]; // Auto-select
+                    getDepartment(response.DATA[0][0]); // Fetch department for selected position
+                } else if (selected_id) {
+                    positionDropdown.value = selected_id;
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error fetching positions:", error);
             }
-        });
-      }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching positions:", error);
+        }
+    });
+}
+
+function getDepartment(selected_id = null) {
+    var positionDropdown = document.getElementById("empPosition");
+    var departmentDropdown = document.getElementById("empDep");
+
+    departmentDropdown.innerHTML = '<option value="">Please select</option>';
+    departmentDropdown.setAttribute("disabled", "true");
+
+    if (!positionDropdown.value) {
+        return;
+    }
+
+    var positionId = positionDropdown.value;
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loader').style.display = 'block';
+
+    $.ajax({
+        type: 'POST',
+        url: '../models/employee.cfc',
+        dataType: 'json',
+        data: {
+            method: 'departmentLists',
+            designation_id: positionId
+        },
+        success: function(response) {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
+
+            if (response && response.DATA.length > 0) {
+                departmentDropdown.removeAttribute("disabled");
+
+                response.DATA.forEach(function(row) {
+                    var option = document.createElement("option");
+                    option.value = row[0]; // Department ID
+                    option.text = row[1];  // Department Name
+                    departmentDropdown.appendChild(option);
+                });
+
+                // Auto-select if only one record exists
+                if (response.DATA.length === 1) {
+                    departmentDropdown.value = response.DATA[0][0]; // Auto-select
+                } else if (selected_id) {
+                    departmentDropdown.value = selected_id;
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching departments:", error);
+        }
+    });
+}
+
 
       function validaAdhaar(){
             var aadhaar = document.getElementById("aadhaarNum").value;
@@ -572,16 +575,16 @@
           document.getElementById("fathername").focus();
           return false;
         }
-        else if(empRoleid==""){
-          document.getElementById("empRoleerror").innerHTML="*This is Required field";
-          document.getElementById("empPosition").focus();
-          return false;
-        }
-        else if(empDesg==""){
-          document.getElementById("empDesgerror").innerHTML="*This is Required field";
-          document.getElementById("empDep").focus();
-          return false;
-        }
+        // else if(empRoleid==""){
+        //   document.getElementById("empRoleerror").innerHTML="*This is Required field";
+        //   document.getElementById("empPosition").focus();
+        //   return false;
+        // }
+        // else if(empDesg==""){
+        //   document.getElementById("empDesgerror").innerHTML="*This is Required field";
+        //   document.getElementById("empDep").focus();
+        //   return false;
+        // }
         else if(!aadharReg.test(aadhaarNum)){
           document.getElementById("lblError").innerHTML="*Invalid Aadhar Number";
           document.getElementById("aadhaarNum").focus();

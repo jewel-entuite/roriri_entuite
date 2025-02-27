@@ -265,45 +265,6 @@
                 }
 
                 // Check if 'success' exists in the URL
-                if (getUrlParameter('u') !== null) {
-                  // Display the overlay and alert
-                  // document.getElementById('overlay').style.display = 'block';
-                  // document.getElementById('successAlert').style.display = 'block';
-                  document.getElementById('overlay').style.display = 'block';
-                  document.getElementById('updateAlert').style.display = 'block';
-                  
-                  // Remove 'success' key from the URL
-                    removeUrlParameter('u');
-                  // Reload the page without the 'success' parameter in the URL
-                    location.reload();
-
-                  // Remove 'success' from the URL after a short delay
-                  setTimeout(function() {
-                    // Hide the overlay and alert after 3 seconds
-                    // document.getElementById('overlay').style.display = 'none';
-                    // document.getElementById('successAlert').style.display = 'none';
-                    document.getElementById('overlay').style.display = 'none';
-                    document.getElementById('updateAlert').style.display = 'none';
-
-                  }, 3000); // Adjust the timeout duration as needed
-                }
-              };
-              window.onload = function() {
-                // Function to get a URL parameter
-                function getUrlParameter(name) {
-                  var url = new URL(window.location.href);
-                  var paramValue = url.searchParams.get(name);
-                  return paramValue;
-                }
-
-                // Function to remove a URL parameter
-                function removeUrlParameter(param) {
-                  var url = new URL(window.location.href);
-                  url.searchParams.delete(param);
-                  window.history.replaceState({}, document.title, url.toString());
-                }
-
-                // Check if 'success' exists in the URL
                 if (getUrlParameter('s') !== null) {
                   // Display the overlay and alert
                   // document.getElementById('overlay').style.display = 'block';
@@ -323,6 +284,28 @@
                     // document.getElementById('successAlert').style.display = 'none';
                     document.getElementById('overlay').style.display = 'none';
                     document.getElementById('successAlert').style.display = 'none';
+
+                  }, 3000); // Adjust the timeout duration as needed
+                }
+                else if (getUrlParameter('u') !== null) {
+                  // Display the overlay and alert
+                  // document.getElementById('overlay').style.display = 'block';
+                  // document.getElementById('successAlert').style.display = 'block';
+                  document.getElementById('overlay').style.display = 'block';
+                  document.getElementById('updateAlert').style.display = 'block';
+                  
+                  // Remove 'success' key from the URL
+                    removeUrlParameter('u');
+                  // Reload the page without the 'success' parameter in the URL
+                    location.reload();
+
+                  // Remove 'success' from the URL after a short delay
+                  setTimeout(function() {
+                    // Hide the overlay and alert after 3 seconds
+                    // document.getElementById('overlay').style.display = 'none';
+                    // document.getElementById('successAlert').style.display = 'none';
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('updateAlert').style.display = 'none';
 
                   }, 3000); // Adjust the timeout duration as needed
                 }
