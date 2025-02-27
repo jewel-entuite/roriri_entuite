@@ -71,6 +71,14 @@
               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
               margin-bottom:10px;
             }
+            #successAlert {
+                position: fixed;
+                top: 50%;
+                left: 50%; 
+                transform: translate(-50%, -50%);
+                z-index: 2000;
+                display: none; 
+            }
         </style>
         <!-- Template Main CSS File -->
         <link href="assets/css/style.css" rel="stylesheet">

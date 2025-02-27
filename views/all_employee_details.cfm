@@ -84,6 +84,30 @@
           cursor: pointer;
           opacity: 1;
       }
+      #loader {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+      }
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); 
+        z-index: 1000;
+      }
+      #updateAlert {
+        position: fixed;
+        top: 50%;
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        z-index: 2000;
+        display: none; 
+      }
 
     </style>  
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
@@ -102,6 +126,8 @@
     <cfinclude template="../includes/header/admin_header.cfm" runonce="true">
   <!-- End Header -->
     <main>
+      <div id="overlay" style="display: none;"></div>
+      <div id="loader" style="display: none;"><img src="../assets/img/loader.gif" width="50" height="50" alt="Loading..."></div>
       <section id="contact" class="contact">
         <div class="m-3" data-aos="fade-up">
           <div class="section-title pt-5" >
@@ -215,6 +241,45 @@
           
             </cfoutput>
             <script>
+              window.onload = function() {
+                // Function to get a URL parameter
+                function getUrlParameter(name) {
+                  var url = new URL(window.location.href);
+                  var paramValue = url.searchParams.get(name);
+                  return paramValue;
+                }
+
+                // Function to remove a URL parameter
+                function removeUrlParameter(param) {
+                  var url = new URL(window.location.href);
+                  url.searchParams.delete(param);
+                  window.history.replaceState({}, document.title, url.toString());
+                }
+
+                // Check if 'success' exists in the URL
+                if (getUrlParameter('u') !== null) {
+                  // Display the overlay and alert
+                  // document.getElementById('overlay').style.display = 'block';
+                  // document.getElementById('successAlert').style.display = 'block';
+                  document.getElementById('overlay').style.display = 'block';
+                  document.getElementById('updateAlert').style.display = 'block';
+                  
+                  // Remove 'success' key from the URL
+                    removeUrlParameter('u');
+                  // Reload the page without the 'success' parameter in the URL
+                    location.reload();
+
+                  // Remove 'success' from the URL after a short delay
+                  setTimeout(function() {
+                    // Hide the overlay and alert after 3 seconds
+                    // document.getElementById('overlay').style.display = 'none';
+                    // document.getElementById('successAlert').style.display = 'none';
+                    document.getElementById('overlay').style.display = 'none';
+                    document.getElementById('updateAlert').style.display = 'none';
+
+                  }, 3000); // Adjust the timeout duration as needed
+                }
+              };
               function editEmpDetails(eId){
                 location.href="employee_profile.cfm?id="+eId;
               }
@@ -354,15 +419,16 @@
           initPagination();
             </script>
             <!-- Vendor JS Files -->
+
+            <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
             <script src="assets/vendor/aos/aos.js"></script>
             <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-            <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
             <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
             <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
             <script src="assets/vendor/php-email-form/validate.js"></script>
+            <script src="assets/js/main.js"></script>
 
           <!-- Template Main JS File -->
-            <script src="assets/js/main.js"></script>
 </body>
 </html>
 
